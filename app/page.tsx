@@ -57,32 +57,84 @@ export default function Home() {
   <!-- Empty title removes the browser's "Tailored CV" print header -->
   <title></title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: auto; }
+
     body {
       font-family: Georgia, "Times New Roman", serif;
-      max-width: 780px;
+      color: #222;
+      line-height: 1.55;
+      font-size: 10.5pt;
+      max-width: 800px;
       margin: 0 auto;
-      padding: 40px 48px;
-      color: #111;
-      line-height: 1.65;
-      font-size: 13px;
+      padding: 36px 52px 48px;
     }
-    h1 { font-size: 1.7em; font-weight: 700; margin: 0 0 0.2em; }
-    h2 { font-size: 1.2em; font-weight: 600; margin: 1.4em 0 0.3em; border-bottom: 1px solid #ddd; padding-bottom: 0.2em; }
-    h3 { font-size: 1em; font-weight: 600; margin: 1em 0 0.2em; }
-    p { margin: 0.4em 0; }
-    ul, ol { padding-left: 1.4em; margin: 0.4em 0; }
-    li { margin: 0.15em 0; }
-    strong { font-weight: 600; }
-    hr { border: none; border-top: 1px solid #ddd; margin: 1.2em 0; }
-    a { color: #111; text-decoration: none; }
+
+    /* ── Name ── */
+    h1 {
+      font-size: 2em;
+      font-weight: 700;
+      text-align: center;
+      color: #1b3554;
+      letter-spacing: 0.03em;
+      margin-bottom: 0.25em;
+    }
+
+    /* ── Contact line (first <p> directly after <h1>) ── */
+    h1 + p {
+      text-align: center;
+      font-size: 0.82em;
+      color: #555;
+      letter-spacing: 0.01em;
+      margin-bottom: 1.4em;
+    }
+
+    /* ── Divider ── */
+    hr {
+      border: none;
+      border-top: 1px solid #c8d8e8;
+      margin: 0.9em 0;
+    }
+
+    /* ── Section headers ── */
+    h2 {
+      font-size: 0.78em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #1b3554;
+      border-bottom: 2px solid #1b3554;
+      padding-bottom: 0.25em;
+      margin: 1.5em 0 0.6em;
+    }
+
+    /* ── Role / company line ── */
+    h3 {
+      font-size: 0.97em;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0.9em 0 0.15em;
+    }
+
+    /* ── Body paragraphs ── */
+    p { margin: 0.3em 0; }
+
+    /* ── Bullet lists ── */
+    ul, ol {
+      padding-left: 1.25em;
+      margin: 0.3em 0 0.5em;
+    }
+    li { margin: 0.2em 0; }
+
+    strong { font-weight: 700; }
+    em     { font-style: italic; color: #444; }
+    a      { color: #1b3554; text-decoration: none; }
+
     @media print {
-      /* margin:0 removes the space the browser uses for its date/URL/page rows.
-         body padding below provides the actual content margins instead. */
       @page { margin: 0; size: A4; }
-      html, body { height: auto; margin: 0; padding: 1.5cm 2cm; }
-      /* Prevent blank last page caused by trailing margin overflow */
+      html, body { height: auto; margin: 0; padding: 1.4cm 1.8cm 1.6cm; }
+      h2 { break-after: avoid; page-break-after: avoid; }
+      h3 { break-after: avoid; page-break-after: avoid; }
       body > *:last-child,
       body > *:last-child > *:last-child {
         break-after: avoid !important;
