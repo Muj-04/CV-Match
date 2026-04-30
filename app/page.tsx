@@ -3,6 +3,57 @@
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
+// ── PDF helpers ────────────────────────────────────────────────────────────
+
+function esc(s: string): string {
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+function inlineMd(s: string): string {
+  return esc(s)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/__(.+?)__/g, "<strong>$1</strong>")
+    .replace(/_([^_]+)_/g, "<em>$1</em>");
+}
+
+function mdToHtml(md: string): string {
+  const lines = md.split("\n");
+  let html = "";
+  let inUl = false;
+
+  const closeList = () => { if (inUl) { html += "</ul>"; inUl = false; } };
+
+  for (const raw of lines) {
+    const line = raw.trim();
+
+    const isBullet = /^[-*•]\s/.test(line);
+    if (!isBullet) closeList();
+
+    if (!line) {
+      // blank — just skip (spacing handled by CSS margins)
+    } else if (/^#{3,}\s/.test(line)) {
+      html += `<h3>${inlineMd(line.replace(/^#{3,}\s*/, ""))}</h3>`;
+    } else if (/^##\s/.test(line)) {
+      html += `<h2>${inlineMd(line.replace(/^##\s*/, ""))}</h2>`;
+    } else if (/^#\s/.test(line)) {
+      // treat a stray h1 in the body as h2
+      html += `<h2>${inlineMd(line.replace(/^#\s*/, ""))}</h2>`;
+    } else if (line === "---" || line === "***" || line === "___") {
+      html += "<hr>";
+    } else if (isBullet) {
+      if (!inUl) { html += "<ul>"; inUl = true; }
+      html += `<li>${inlineMd(line.replace(/^[-*•]\s+/, ""))}</li>`;
+    } else {
+      html += `<p>${inlineMd(line)}</p>`;
+    }
+  }
+  closeList();
+  return html;
+}
+
+// ──────────────────────────────────────────────────────────────────────────
+
 export default function Home() {
   const [jobDescription, setJobDescription] = useState("");
   const [cvText, setCvText] = useState("");
@@ -47,146 +98,111 @@ export default function Home() {
   }
 
   function handleDownloadPdf() {
-    const content = resultRef.current?.innerHTML ?? "";
+    // Parse name and contact directly from the raw markdown text so the
+    // header is always structurally correct — no DOM heuristics needed.
+    const rawLines = result.split("\n");
+
+    // First non-empty line = name (strip any leading # characters)
+    const nameIdx = rawLines.findIndex((l) => l.trim().length > 0);
+    const name = nameIdx >= 0
+      ? rawLines[nameIdx].trim().replace(/^#+\s*/, "")
+      : "";
+
+    // Next non-empty, non-heading line = contact info
+    let contact = "";
+    let bodyStart = nameIdx + 1;
+    for (let i = nameIdx + 1; i < rawLines.length; i++) {
+      const l = rawLines[i].trim();
+      if (!l) continue;
+      if (!l.startsWith("#")) { contact = l; bodyStart = i + 1; }
+      break;
+    }
+
+    const bodyHtml = mdToHtml(rawLines.slice(bodyStart).join("\n"));
+
     const win = window.open("", "_blank");
     if (!win) return;
+
     win.document.write(`<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
-  <!-- Empty title removes the browser's "Tailored CV" print header -->
   <title></title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: auto; }
-
     body {
       font-family: Georgia, "Times New Roman", serif;
       color: #1a1a1a;
-      line-height: 1.55;
       font-size: 10.5pt;
+      line-height: 1.55;
       max-width: 800px;
       margin: 0 auto;
-      padding: 36px 52px 48px;
+      padding: 32px 52px 48px;
     }
-
-    /* ── Header block (name + contact) built by JS below ── */
     .cv-header {
       text-align: center;
-      margin-bottom: 1.4em;
-      padding-bottom: 0.9em;
-      border-bottom: 2.5px solid #1b3554;
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+      border-bottom: 3px solid #1b3554;
     }
-
-    .cv-header h1 {
-      font-size: 2.2em;
-      font-weight: 700;
+    .cv-name {
+      font-size: 28px;
+      font-weight: bold;
       color: #1b3554;
-      letter-spacing: 0.04em;
-      line-height: 1.15;
-      margin-bottom: 0.3em;
-      text-align: center;
+      font-family: Georgia, serif;
+      letter-spacing: 0.03em;
+      margin-bottom: 4px;
     }
-
-    .cv-header p {
-      font-size: 0.83em;
+    .cv-contact {
+      font-size: 12px;
       color: #555;
       font-family: Arial, Helvetica, sans-serif;
-      letter-spacing: 0.02em;
-      text-align: center;
-      margin: 0;
+      margin-bottom: 0;
     }
-
-    /* Fallback styles when JS doesn't run */
-    h1 {
-      font-size: 2.2em;
-      font-weight: 700;
-      color: #1b3554;
-      text-align: center;
-      letter-spacing: 0.04em;
-      line-height: 1.15;
-      margin-bottom: 0.3em;
-    }
-    h1 + p {
-      text-align: center;
-      font-size: 0.83em;
-      color: #555;
-      font-family: Arial, Helvetica, sans-serif;
-      letter-spacing: 0.02em;
-      margin-bottom: 1.4em;
-    }
-
-    /* ── Section headers ── */
     h2 {
-      font-size: 0.78em;
+      font-size: 9.5pt;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.11em;
+      letter-spacing: 0.1em;
       color: #1b3554;
       border-bottom: 2px solid #1b3554;
-      padding-bottom: 0.25em;
-      margin: 1.5em 0 0.6em;
+      padding-bottom: 3px;
+      margin: 18px 0 7px;
     }
-
-    /* ── Role / company line ── */
     h3 {
-      font-size: 0.97em;
+      font-size: 10.5pt;
       font-weight: 700;
       color: #1a1a1a;
-      margin: 0.9em 0 0.15em;
+      margin: 11px 0 2px;
     }
-
-    p { margin: 0.3em 0; }
-
-    ul, ol { padding-left: 1.25em; margin: 0.3em 0 0.5em; }
-    li { margin: 0.2em 0; }
-
+    p  { margin: 3px 0; font-size: 10.5pt; }
+    ul, ol { padding-left: 18px; margin: 3px 0 7px; }
+    li { margin: 2px 0; font-size: 10.5pt; }
     strong { font-weight: 700; }
     em     { font-style: italic; color: #444; }
     a      { color: #1b3554; text-decoration: none; }
-
-    hr { border: none; border-top: 1px solid #c8d8e8; margin: 0.9em 0; }
-
+    hr     { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
     @media print {
-      @page { margin: 0; size: A4; }
-      html, body { height: auto; margin: 0; padding: 1.4cm 1.8cm 1.6cm; }
+      @page { margin: 1.5cm 2cm; size: A4; }
       h2 { break-after: avoid; page-break-after: avoid; }
       h3 { break-after: avoid; page-break-after: avoid; }
-      body > *:last-child,
-      body > *:last-child > *:last-child {
-        break-after: avoid !important;
-        page-break-after: avoid !important;
-        margin-bottom: 0 !important;
-      }
+      body > *:last-child { page-break-after: avoid; margin-bottom: 0; }
     }
   </style>
 </head>
 <body>
-  ${content}
-  <script>
-    (function () {
-      var h1 = document.querySelector('h1');
-      if (!h1) return;
-
-      // Wrap the name heading in a centred header block
-      var header = document.createElement('div');
-      header.className = 'cv-header';
-      h1.parentNode.insertBefore(header, h1);
-      header.appendChild(h1);
-
-      // Pull the very next element sibling into the header only if it's a
-      // plain paragraph (the contact line).  Skip text nodes / whitespace.
-      var next = header.nextElementSibling;
-      if (next && next.tagName === 'P') {
-        header.appendChild(next);
-      }
-    })();
-  </script>
+  <div class="cv-header">
+    <div class="cv-name">${esc(name)}</div>
+    <p class="cv-contact">${esc(contact)}</p>
+  </div>
+  <div class="cv-body">${bodyHtml}</div>
 </body>
 </html>`);
+
     win.document.close();
     win.focus();
-    setTimeout(() => { win.print(); win.close(); }, 300);
+    setTimeout(() => { win.print(); win.close(); }, 250);
   }
 
   return (
