@@ -1,7 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
-import { PDFParse } from "pdf-parse";
-import mammoth from "mammoth";
 
 export const maxDuration = 10;
 
@@ -11,6 +9,7 @@ async function extractText(file: File): Promise<string> {
   const name = file.name.toLowerCase();
 
   if (name.endsWith(".pdf") || file.type === "application/pdf") {
+    const { PDFParse } = await import("pdf-parse");
     const parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
     await parser.destroy();
@@ -22,6 +21,7 @@ async function extractText(file: File): Promise<string> {
     file.type ===
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
   ) {
+    const { default: mammoth } = await import("mammoth");
     const result = await mammoth.extractRawText({ buffer });
     return result.value.trim();
   }
