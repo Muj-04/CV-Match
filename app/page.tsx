@@ -277,6 +277,9 @@ export default function Home() {
                     className="hidden"
                     onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
                   />
+                  <p className="mt-2 text-xs text-amber-600">
+                    💡 Tip: For best results, use the <button type="button" onClick={() => setCvMode("paste")} className="font-semibold underline underline-offset-2 hover:text-amber-700">Paste text tab</button> and paste your CV directly.
+                  </p>
                 </>
               ) : (
                 <textarea
