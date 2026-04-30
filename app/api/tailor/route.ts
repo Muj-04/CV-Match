@@ -56,6 +56,8 @@ STRICT RULES (never break these):
 - Preserve all contact details, dates, company names, and job titles exactly.
 - Respond in the same language as the original CV.
 - Return ONLY the final CV text — no commentary, no explanation, no metadata.
+- Never append a "Keywords" or "Key Terms" section of any kind.
+- Never insert bracketed notes, parenthetical comments, or AI meta-commentary inside the CV text (e.g. "(Removed project X because…)", "Note: tailored for…", "[Added to match JD]"). The output must read as a clean human-written CV with zero AI artefacts.
 
 TAILORING INSTRUCTIONS — apply every one of these:
 

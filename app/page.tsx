@@ -62,7 +62,7 @@ export default function Home() {
 
     body {
       font-family: Georgia, "Times New Roman", serif;
-      color: #222;
+      color: #1a1a1a;
       line-height: 1.55;
       font-size: 10.5pt;
       max-width: 800px;
@@ -70,30 +70,50 @@ export default function Home() {
       padding: 36px 52px 48px;
     }
 
-    /* ── Name ── */
-    h1 {
-      font-size: 2em;
-      font-weight: 700;
+    /* ── Header block (name + contact) built by JS below ── */
+    .cv-header {
       text-align: center;
-      color: #1b3554;
-      letter-spacing: 0.03em;
-      margin-bottom: 0.25em;
+      margin-bottom: 1.4em;
+      padding-bottom: 0.9em;
+      border-bottom: 2.5px solid #1b3554;
     }
 
-    /* ── Contact line (first <p> directly after <h1>) ── */
+    .cv-header h1 {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #1b3554;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      margin-bottom: 0.3em;
+      text-align: center;
+    }
+
+    .cv-header p {
+      font-size: 0.83em;
+      color: #555;
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0.02em;
+      text-align: center;
+      margin: 0;
+    }
+
+    /* Fallback styles when JS doesn't run */
+    h1 {
+      font-size: 2.2em;
+      font-weight: 700;
+      color: #1b3554;
+      text-align: center;
+      letter-spacing: 0.04em;
+      line-height: 1.15;
+      margin-bottom: 0.3em;
+    }
     h1 + p {
       text-align: center;
-      font-size: 0.82em;
+      font-size: 0.83em;
       color: #555;
-      letter-spacing: 0.01em;
+      font-family: Arial, Helvetica, sans-serif;
+      letter-spacing: 0.02em;
       margin-bottom: 1.4em;
-    }
-
-    /* ── Divider ── */
-    hr {
-      border: none;
-      border-top: 1px solid #c8d8e8;
-      margin: 0.9em 0;
     }
 
     /* ── Section headers ── */
@@ -101,7 +121,7 @@ export default function Home() {
       font-size: 0.78em;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.11em;
       color: #1b3554;
       border-bottom: 2px solid #1b3554;
       padding-bottom: 0.25em;
@@ -116,19 +136,16 @@ export default function Home() {
       margin: 0.9em 0 0.15em;
     }
 
-    /* ── Body paragraphs ── */
     p { margin: 0.3em 0; }
 
-    /* ── Bullet lists ── */
-    ul, ol {
-      padding-left: 1.25em;
-      margin: 0.3em 0 0.5em;
-    }
+    ul, ol { padding-left: 1.25em; margin: 0.3em 0 0.5em; }
     li { margin: 0.2em 0; }
 
     strong { font-weight: 700; }
     em     { font-style: italic; color: #444; }
     a      { color: #1b3554; text-decoration: none; }
+
+    hr { border: none; border-top: 1px solid #c8d8e8; margin: 0.9em 0; }
 
     @media print {
       @page { margin: 0; size: A4; }
@@ -144,11 +161,32 @@ export default function Home() {
     }
   </style>
 </head>
-<body>${content}</body>
+<body>
+  ${content}
+  <script>
+    (function () {
+      var h1 = document.querySelector('h1');
+      if (!h1) return;
+
+      // Wrap the name heading in a centred header block
+      var header = document.createElement('div');
+      header.className = 'cv-header';
+      h1.parentNode.insertBefore(header, h1);
+      header.appendChild(h1);
+
+      // Pull the very next element sibling into the header only if it's a
+      // plain paragraph (the contact line).  Skip text nodes / whitespace.
+      var next = header.nextElementSibling;
+      if (next && next.tagName === 'P') {
+        header.appendChild(next);
+      }
+    })();
+  </script>
+</body>
 </html>`);
     win.document.close();
     win.focus();
-    setTimeout(() => { win.print(); win.close(); }, 250);
+    setTimeout(() => { win.print(); win.close(); }, 300);
   }
 
   return (
