@@ -113,10 +113,10 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-[#f2faff]">
 
       {/* ── Hero ── */}
-      <section className="relative overflow-hidden animate-gradient bg-gradient-to-br from-blue-600 via-indigo-600 to-violet-700">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#000f22] to-[#1b3554]">
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
@@ -129,7 +129,7 @@ export default function Home() {
           <h1 className="text-4xl sm:text-6xl font-black text-white leading-[1.08] tracking-tight">
             Get hired faster with an
             <br />
-            <span className="bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+            <span className="text-[#c0e6fd]">
               AI-tailored CV
             </span>
           </h1>
@@ -147,9 +147,9 @@ export default function Home() {
             ].map((feat) => (
               <span
                 key={feat}
-                className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-sm text-white/90"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[#5b86b6]/50 bg-[#1b3554] px-4 py-1.5 text-sm text-white/90"
               >
-                <svg className="h-3.5 w-3.5 text-emerald-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="h-3.5 w-3.5 text-[#c0e6fd] shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                 </svg>
                 {feat}
@@ -206,7 +206,7 @@ export default function Home() {
                 onChange={(e) => setJobDescription(e.target.value)}
                 placeholder="Paste the full job description here…"
                 rows={8}
-                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-3 focus:ring-indigo-500/15 resize-y transition-all"
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#5b86b6] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#3f6593]/15 resize-y transition-all"
               />
             </div>
 
@@ -223,7 +223,7 @@ export default function Home() {
                     onClick={() => setCvMode("upload")}
                     className={`px-3 py-1.5 transition-colors ${
                       cvMode === "upload"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-[#3f6593] text-white"
                         : "bg-white text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -234,7 +234,7 @@ export default function Home() {
                     onClick={() => setCvMode("paste")}
                     className={`px-3 py-1.5 transition-colors border-l border-gray-200 ${
                       cvMode === "paste"
-                        ? "bg-indigo-600 text-white"
+                        ? "bg-[#3f6593] text-white"
                         : "bg-white text-gray-500 hover:text-gray-700"
                     }`}
                   >
@@ -248,11 +248,11 @@ export default function Home() {
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    className="group w-full rounded-xl border-2 border-dashed border-gray-200 bg-gray-50/50 px-4 py-8 text-center hover:border-indigo-400 hover:bg-indigo-50/40 transition-all"
+                    className="group w-full rounded-xl border-2 border-dashed border-[#5b86b6] bg-gray-50/50 px-4 py-8 text-center hover:border-[#3f6593] hover:bg-[#c0e6fd]/20 transition-all"
                   >
                     {cvFile ? (
                       <div className="flex flex-col items-center gap-2">
-                        <svg className="h-9 w-9 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <svg className="h-9 w-9 text-[#3f6593]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
                         </svg>
                         <span className="text-sm font-semibold text-gray-800">{cvFile.name}</span>
@@ -260,10 +260,10 @@ export default function Home() {
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-2">
-                        <svg className="h-10 w-10 text-gray-300 group-hover:text-indigo-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                        <svg className="h-10 w-10 text-gray-300 group-hover:text-[#5b86b6] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                           <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                         </svg>
-                        <span className="text-sm font-semibold text-gray-500 group-hover:text-indigo-600 transition-colors">
+                        <span className="text-sm font-semibold text-gray-500 group-hover:text-[#3f6593] transition-colors">
                           Upload your CV
                         </span>
                         <span className="text-xs text-gray-400">PDF or DOCX</span>
@@ -287,7 +287,7 @@ export default function Home() {
                   onChange={(e) => setCvPastedText(e.target.value)}
                   placeholder="Paste your CV text here — copy from Word, Google Docs, or any text editor…"
                   rows={10}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:bg-white focus:outline-none focus:ring-3 focus:ring-indigo-500/15 resize-y transition-all"
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#5b86b6] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#3f6593]/15 resize-y transition-all"
                 />
               )}
             </div>
@@ -300,7 +300,7 @@ export default function Home() {
                 (cvMode === "upload" ? !cvFile : !cvPastedText.trim()) ||
                 loading
               }
-              className="w-full rounded-xl bg-gradient-to-r from-blue-600 to-violet-600 px-6 py-4 text-base font-bold text-white shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:from-blue-500 hover:to-violet-500 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
+              className="w-full rounded-xl bg-[#3f6593] px-6 py-4 text-base font-bold text-white shadow-lg shadow-[#3f6593]/30 hover:bg-[#1b3554] hover:shadow-[#1b3554]/40 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
             >
               {loading ? "Tailoring your CV…" : "✦  Tailor my CV"}
             </button>
@@ -310,7 +310,7 @@ export default function Home() {
         {/* Loading */}
         {loading && (
           <div className="mt-8 flex flex-col items-center gap-3 py-6 text-gray-400">
-            <svg className="animate-spin h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24">
+            <svg className="animate-spin h-8 w-8 text-[#3f6593]" fill="none" viewBox="0 0 24 24">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
@@ -329,7 +329,7 @@ export default function Home() {
         {result && (
           <div className="mt-8 rounded-2xl border border-gray-200 bg-white shadow-xl shadow-gray-200/70 overflow-hidden">
             {/* Header bar */}
-            <div className="flex items-center justify-between px-4 sm:px-5 py-3 bg-gradient-to-r from-blue-600 to-violet-600">
+            <div className="flex items-center justify-between px-4 sm:px-5 py-3 bg-gradient-to-r from-[#1b3554] to-[#3f6593]">
               <div className="flex items-center gap-2 text-white">
                 <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
