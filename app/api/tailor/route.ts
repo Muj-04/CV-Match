@@ -4,33 +4,68 @@ import OpenAI from "openai";
 export const maxDuration = 10;
 
 // Zero-dependency PDF text extraction.
-// Works for text-based PDFs by reading the raw bytes and pulling string
-// literals out of PDF BT/ET (Begin Text / End Text) drawing blocks.
-// Scanned or heavily-compressed PDFs will yield little text — callers
-// should check the result length and surface a helpful error.
+// Handles both PDF literal strings (text) and hex strings <4A6F...>,
+// including UTF-16 BE (the encoding Word/Google Docs use for Unicode text).
 function extractRawPdfText(buffer: Buffer): string {
   const raw = buffer.toString("latin1");
   const texts: string[] = [];
 
-  // Primary pass: extract strings from BT … ET blocks
+  // Decode a PDF literal string — handles octal \ddd and common escapes.
+  function decodeLiteral(s: string): string {
+    return s
+      .replace(/\\(\d{1,3})/g, (_, oct) =>
+        String.fromCharCode(parseInt(oct, 8))
+      )
+      .replace(/\\n/g, " ")
+      .replace(/\\r/g, " ")
+      .replace(/\\t/g, " ")
+      .replace(/\\\(/g, "(")
+      .replace(/\\\)/g, ")")
+      .replace(/\\\\/g, "\\");
+  }
+
+  // Decode a PDF hex string — handles plain ASCII, Latin-1, and UTF-16 BE.
+  // Modern PDFs from Word / Google Docs store Unicode text as <FEFF...>.
+  function decodeHex(hex: string): string {
+    const h = hex.replace(/\s/g, "");
+    if (!h) return "";
+    // UTF-16 BE with BOM (FEFF) — most common for non-ASCII names & emails
+    if (h.startsWith("FEFF") || h.startsWith("feff")) {
+      let out = "";
+      for (let i = 4; i + 3 < h.length; i += 4) {
+        const cp = parseInt(h.slice(i, i + 4), 16);
+        if (cp > 0) out += String.fromCodePoint(cp);
+      }
+      return out;
+    }
+    // Plain single-byte hex
+    let out = "";
+    for (let i = 0; i + 1 < h.length; i += 2) {
+      const byte = parseInt(h.slice(i, i + 2), 16);
+      if (byte >= 0x20) out += String.fromCharCode(byte);
+    }
+    return out;
+  }
+
+  // Primary pass: extract all strings from BT … ET drawing blocks.
+  // Match both (literal) and <hex> forms.
   const btEt = /BT([\s\S]*?)ET/g;
   let block: RegExpExecArray | null;
   while ((block = btEt.exec(raw)) !== null) {
-    const strLiteral = /\(([^)\\]*(?:\\.[^)\\]*)*)\)/g;
+    const strPattern =
+      /\(([^)\\]*(?:\\[\s\S][^)\\]*)*)\)|<([0-9a-fA-F\s]{4,})>/g;
     let s: RegExpExecArray | null;
-    while ((s = strLiteral.exec(block[1])) !== null) {
-      const text = s[1]
-        .replace(/\\[nrt]/g, " ")
-        .replace(/\\\(/g, "(")
-        .replace(/\\\)/g, ")")
-        .replace(/\\\\/g, "\\")
-        .trim();
-      if (text) texts.push(text);
+    while ((s = strPattern.exec(block[1])) !== null) {
+      const text = (
+        s[1] !== undefined ? decodeLiteral(s[1]) : decodeHex(s[2])
+      ).trim();
+      // Skip pure numbers (positioning operands like "12.5")
+      if (text && !/^\d+(\.\d+)?$/.test(text)) texts.push(text);
     }
   }
 
-  // Fallback: if the BT/ET pass came up short (e.g. older PDF structure),
-  // grab any run of 5+ printable ASCII characters instead.
+  // Fallback: if the BT/ET pass came up short (compressed / unusual PDF),
+  // grab any run of 5+ printable ASCII characters from the raw bytes.
   if (texts.join("").replace(/\s/g, "").length < 100) {
     texts.length = 0;
     const printable = /[ -~\t\r\n]{5,}/g;

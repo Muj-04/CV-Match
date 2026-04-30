@@ -62,10 +62,20 @@ export default function Home() {
 <html>
 <head>
   <meta charset="utf-8" />
-  <title>Tailored CV</title>
+  <!-- Empty title removes the browser's "Tailored CV" print header -->
+  <title></title>
   <style>
     *, *::before, *::after { box-sizing: border-box; }
-    body { font-family: Georgia, "Times New Roman", serif; max-width: 780px; margin: 40px auto; padding: 0 48px; color: #111; line-height: 1.65; font-size: 13px; }
+    html, body { height: auto; }
+    body {
+      font-family: Georgia, "Times New Roman", serif;
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 40px 48px;
+      color: #111;
+      line-height: 1.65;
+      font-size: 13px;
+    }
     h1 { font-size: 1.7em; font-weight: 700; margin: 0 0 0.2em; }
     h2 { font-size: 1.2em; font-weight: 600; margin: 1.4em 0 0.3em; border-bottom: 1px solid #ddd; padding-bottom: 0.2em; }
     h3 { font-size: 1em; font-weight: 600; margin: 1em 0 0.2em; }
@@ -76,8 +86,17 @@ export default function Home() {
     hr { border: none; border-top: 1px solid #ddd; margin: 1.2em 0; }
     a { color: #111; text-decoration: none; }
     @media print {
-      body { margin: 0; padding: 32px 48px; }
-      @page { margin: 1.5cm 2cm; }
+      /* margin:0 removes the space the browser uses for its date/URL/page rows.
+         body padding below provides the actual content margins instead. */
+      @page { margin: 0; size: A4; }
+      html, body { height: auto; margin: 0; padding: 1.5cm 2cm; }
+      /* Prevent blank last page caused by trailing margin overflow */
+      body > *:last-child,
+      body > *:last-child > *:last-child {
+        break-after: avoid !important;
+        page-break-after: avoid !important;
+        margin-bottom: 0 !important;
+      }
     }
   </style>
 </head>
