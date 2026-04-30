@@ -1,7 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx create-next-app@latest *)"
+      "Bash(npx create-next-app@latest *)",
+      "Bash(npm install *)",
+      "Bash(node *)",
+      "Bash(npx tsc *)",
+      "Bash(npm uninstall *)",
+      "Bash(npm run *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
