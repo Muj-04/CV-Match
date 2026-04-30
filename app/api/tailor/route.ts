@@ -3,17 +3,42 @@ import OpenAI from "openai";
 
 export const maxDuration = 10;
 
+async function extractPdfText(buffer: Buffer): Promise<string> {
+  // Dynamic import of the legacy build — the only pdfjs-dist build that works
+  // in Node.js serverless (no DOMMatrix / browser globals required).
+  const { getDocument, GlobalWorkerOptions } = await import(
+    "pdfjs-dist/legacy/build/pdf.mjs" as string
+  ) as typeof import("pdfjs-dist");
+
+  // Disable the web worker — not available in a serverless Lambda.
+  GlobalWorkerOptions.workerSrc = "";
+
+  const data = new Uint8Array(buffer);
+  const pdf = await getDocument({ data, useWorkerFetch: false }).promise;
+
+  const pages: string[] = [];
+  for (let i = 1; i <= pdf.numPages; i++) {
+    const page = await pdf.getPage(i);
+    const content = await page.getTextContent();
+    const pageText = content.items
+      .filter((item) => "str" in item)
+      .map((item) => (item as { str: string }).str)
+      .join(" ");
+    pages.push(pageText);
+    page.cleanup();
+  }
+
+  await pdf.cleanup();
+  return pages.join("\n").trim();
+}
+
 async function extractText(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
   const name = file.name.toLowerCase();
 
   if (name.endsWith(".pdf") || file.type === "application/pdf") {
-    const { PDFParse } = await import("pdf-parse");
-    const parser = new PDFParse({ data: buffer });
-    const result = await parser.getText();
-    await parser.destroy();
-    return result.text.trim();
+    return extractPdfText(buffer);
   }
 
   if (
