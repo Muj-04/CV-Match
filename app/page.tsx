@@ -5,20 +5,16 @@ import ReactMarkdown from "react-markdown";
 
 export default function Home() {
   const [jobDescription, setJobDescription] = useState("");
-  const [cvFile, setCvFile] = useState<File | null>(null);
-  const [cvMode, setCvMode] = useState<"upload" | "paste">("upload");
-  const [cvPastedText, setCvPastedText] = useState("");
+  const [cvText, setCvText] = useState("");
   const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [copied, setCopied] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const resultRef = useRef<HTMLDivElement>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const cvReady = cvMode === "upload" ? !!cvFile : cvPastedText.trim().length > 0;
-    if (!jobDescription.trim() || !cvReady) return;
+    if (!jobDescription.trim() || !cvText.trim()) return;
 
     setLoading(true);
     setError("");
@@ -27,11 +23,7 @@ export default function Home() {
     try {
       const body = new FormData();
       body.append("jobDescription", jobDescription);
-      if (cvMode === "paste") {
-        body.append("cvText", cvPastedText.trim());
-      } else if (cvFile) {
-        body.append("cv", cvFile);
-      }
+      body.append("cvText", cvText.trim());
 
       const res = await fetch("/api/tailor", { method: "POST", body });
 
@@ -45,12 +37,7 @@ export default function Home() {
         }
       }
 
-      if (!res.ok) {
-        const msg = data.error ?? `Server error (${res.status})`;
-        // Auto-switch to paste mode so the user can act immediately
-        if (msg.includes("Paste text tab")) setCvMode("paste");
-        throw new Error(msg);
-      }
+      if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
       setResult(data.result ?? "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -210,96 +197,24 @@ export default function Home() {
               />
             </div>
 
-            {/* CV — upload or paste */}
+            {/* CV text */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-semibold text-gray-700">
-                  Your CV
-                </label>
-                {/* Mode toggle */}
-                <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => setCvMode("upload")}
-                    className={`px-3 py-1.5 transition-colors ${
-                      cvMode === "upload"
-                        ? "bg-[#3f6593] text-white"
-                        : "bg-white text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    Upload file
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCvMode("paste")}
-                    className={`px-3 py-1.5 transition-colors border-l border-gray-200 ${
-                      cvMode === "paste"
-                        ? "bg-[#3f6593] text-white"
-                        : "bg-white text-gray-500 hover:text-gray-700"
-                    }`}
-                  >
-                    Paste text
-                  </button>
-                </div>
-              </div>
-
-              {cvMode === "upload" ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="group w-full rounded-xl border-2 border-dashed border-[#5b86b6] bg-gray-50/50 px-4 py-8 text-center hover:border-[#3f6593] hover:bg-[#c0e6fd]/20 transition-all"
-                  >
-                    {cvFile ? (
-                      <div className="flex flex-col items-center gap-2">
-                        <svg className="h-9 w-9 text-[#3f6593]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-                        </svg>
-                        <span className="text-sm font-semibold text-gray-800">{cvFile.name}</span>
-                        <span className="text-xs text-gray-400">Click to change</span>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-2">
-                        <svg className="h-10 w-10 text-gray-300 group-hover:text-[#5b86b6] transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
-                        </svg>
-                        <span className="text-sm font-semibold text-gray-500 group-hover:text-[#3f6593] transition-colors">
-                          Upload your CV
-                        </span>
-                        <span className="text-xs text-gray-400">PDF or DOCX</span>
-                      </div>
-                    )}
-                  </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.docx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    className="hidden"
-                    onChange={(e) => setCvFile(e.target.files?.[0] ?? null)}
-                  />
-                  <p className="mt-2 text-xs text-amber-600">
-                    💡 Tip: For best results, use the <button type="button" onClick={() => setCvMode("paste")} className="font-semibold underline underline-offset-2 hover:text-amber-700">Paste text tab</button> and paste your CV directly.
-                  </p>
-                </>
-              ) : (
-                <textarea
-                  value={cvPastedText}
-                  onChange={(e) => setCvPastedText(e.target.value)}
-                  placeholder="Paste your CV text here — copy from Word, Google Docs, or any text editor…"
-                  rows={10}
-                  className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#5b86b6] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#3f6593]/15 resize-y transition-all"
-                />
-              )}
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Your CV
+              </label>
+              <textarea
+                value={cvText}
+                onChange={(e) => setCvText(e.target.value)}
+                placeholder="Paste your CV text here — copy from Word, Google Docs, or any text editor…"
+                rows={10}
+                className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#5b86b6] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#3f6593]/15 resize-y transition-all"
+              />
             </div>
 
             {/* Submit */}
             <button
               type="submit"
-              disabled={
-                !jobDescription.trim() ||
-                (cvMode === "upload" ? !cvFile : !cvPastedText.trim()) ||
-                loading
-              }
+              disabled={!jobDescription.trim() || !cvText.trim() || loading}
               className="w-full rounded-xl bg-[#3f6593] px-6 py-4 text-base font-bold text-white shadow-lg shadow-[#3f6593]/30 hover:bg-[#1b3554] hover:shadow-[#1b3554]/40 disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none transition-all"
             >
               {loading ? "Tailoring your CV…" : "✦  Tailor my CV"}

@@ -3,114 +3,6 @@ import OpenAI from "openai";
 
 export const maxDuration = 10;
 
-// Zero-dependency PDF text extraction.
-// Handles both PDF literal strings (text) and hex strings <4A6F...>,
-// including UTF-16 BE (the encoding Word/Google Docs use for Unicode text).
-function extractRawPdfText(buffer: Buffer): string {
-  const raw = buffer.toString("latin1");
-  const texts: string[] = [];
-
-  // Decode a PDF literal string — handles octal \ddd and common escapes.
-  function decodeLiteral(s: string): string {
-    return s
-      .replace(/\\(\d{1,3})/g, (_, oct) =>
-        String.fromCharCode(parseInt(oct, 8))
-      )
-      .replace(/\\n/g, " ")
-      .replace(/\\r/g, " ")
-      .replace(/\\t/g, " ")
-      .replace(/\\\(/g, "(")
-      .replace(/\\\)/g, ")")
-      .replace(/\\\\/g, "\\");
-  }
-
-  // Decode a PDF hex string — handles plain ASCII, Latin-1, and UTF-16 BE.
-  // Modern PDFs from Word / Google Docs store Unicode text as <FEFF...>.
-  function decodeHex(hex: string): string {
-    const h = hex.replace(/\s/g, "");
-    if (!h) return "";
-    // UTF-16 BE with BOM (FEFF) — most common for non-ASCII names & emails
-    if (h.startsWith("FEFF") || h.startsWith("feff")) {
-      let out = "";
-      for (let i = 4; i + 3 < h.length; i += 4) {
-        const cp = parseInt(h.slice(i, i + 4), 16);
-        if (cp > 0) out += String.fromCodePoint(cp);
-      }
-      return out;
-    }
-    // Plain single-byte hex
-    let out = "";
-    for (let i = 0; i + 1 < h.length; i += 2) {
-      const byte = parseInt(h.slice(i, i + 2), 16);
-      if (byte >= 0x20) out += String.fromCharCode(byte);
-    }
-    return out;
-  }
-
-  // Primary pass: extract all strings from BT … ET drawing blocks.
-  // Match both (literal) and <hex> forms.
-  const btEt = /BT([\s\S]*?)ET/g;
-  let block: RegExpExecArray | null;
-  while ((block = btEt.exec(raw)) !== null) {
-    const strPattern =
-      /\(([^)\\]*(?:\\[\s\S][^)\\]*)*)\)|<([0-9a-fA-F\s]{4,})>/g;
-    let s: RegExpExecArray | null;
-    while ((s = strPattern.exec(block[1])) !== null) {
-      const text = (
-        s[1] !== undefined ? decodeLiteral(s[1]) : decodeHex(s[2])
-      ).trim();
-      // Skip pure numbers (positioning operands like "12.5")
-      if (text && !/^\d+(\.\d+)?$/.test(text)) texts.push(text);
-    }
-  }
-
-  // Fallback: if the BT/ET pass came up short (compressed / unusual PDF),
-  // grab any run of 5+ printable ASCII characters from the raw bytes.
-  if (texts.join("").replace(/\s/g, "").length < 100) {
-    texts.length = 0;
-    const printable = /[ -~\t\r\n]{5,}/g;
-    let m: RegExpExecArray | null;
-    while ((m = printable.exec(raw)) !== null) {
-      const chunk = m[0].trim();
-      if (chunk.length >= 5) texts.push(chunk);
-    }
-  }
-
-  return texts.join(" ").replace(/\s+/g, " ").trim();
-}
-
-// Returns true when extracted text is too short or looks like PDF binary
-// artefacts rather than real CV content.
-function looksLikeGarbage(text: string): boolean {
-  const nonSpace = text.replace(/\s/g, "");
-  if (nonSpace.length < 200) return true;
-  // Fewer than 40 % alphabetic characters → mostly numbers / symbols / binary
-  const alphaCount = (text.match(/[a-zA-Z]/g) ?? []).length;
-  return alphaCount / nonSpace.length < 0.4;
-}
-
-async function extractText(file: File): Promise<string> {
-  const arrayBuffer = await file.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const name = file.name.toLowerCase();
-
-  if (name.endsWith(".pdf") || file.type === "application/pdf") {
-    return extractRawPdfText(buffer);
-  }
-
-  if (
-    name.endsWith(".docx") ||
-    file.type ===
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-  ) {
-    const { default: mammoth } = await import("mammoth");
-    const result = await mammoth.extractRawText({ buffer });
-    return result.value.trim();
-  }
-
-  throw new Error("Unsupported file type. Please upload a PDF or DOCX file.");
-}
-
 export async function POST(req: NextRequest) {
   const apiKey = process.env.GROQ_API_KEY;
   if (!apiKey) {
@@ -128,7 +20,6 @@ export async function POST(req: NextRequest) {
   }
 
   const jobDescription = formData.get("jobDescription");
-  const cvFile = formData.get("cv");
   const cvText = formData.get("cvText");
 
   if (typeof jobDescription !== "string" || !jobDescription.trim()) {
@@ -138,32 +29,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Accept either a pasted CV text string or an uploaded file
-  let cvContent: string;
-
-  if (typeof cvText === "string" && cvText.trim()) {
-    cvContent = cvText.trim();
-  } else if (cvFile instanceof File) {
-    try {
-      cvContent = await extractText(cvFile);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Could not read the file.";
-      return NextResponse.json({ error: message }, { status: 422 });
-    }
-
-    if (looksLikeGarbage(cvContent)) {
-      return NextResponse.json(
-        {
-          error:
-            "We couldn't read your PDF clearly. Please use the Paste text tab and paste your CV directly for best results.",
-        },
-        { status: 422 }
-      );
-    }
-  } else {
+  if (typeof cvText !== "string" || !cvText.trim()) {
     return NextResponse.json(
-      { error: "Please upload a CV file or paste your CV text." },
+      { error: "Please paste your CV text." },
       { status: 400 }
     );
   }
@@ -198,7 +66,7 @@ ${jobDescription}
 
 ---
 ORIGINAL CV:
-${cvContent}`,
+${cvText.trim()}`,
         },
       ],
     });
