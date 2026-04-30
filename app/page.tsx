@@ -21,6 +21,10 @@ function mdToHtml(md: string): string {
   const lines = md.split("\n");
   let html = "";
   let inUl = false;
+  let currentH2 = "";
+
+  const isSkills = () =>
+    /skill|technical|competenc|tool|technolog|proficienc/i.test(currentH2);
 
   const closeList = () => { if (inUl) { html += "</ul>"; inUl = false; } };
 
@@ -31,18 +35,22 @@ function mdToHtml(md: string): string {
     if (!isBullet) closeList();
 
     if (!line) {
-      // blank — just skip (spacing handled by CSS margins)
+      // blank — skip
     } else if (/^#{3,}\s/.test(line)) {
       html += `<h3>${inlineMd(line.replace(/^#{3,}\s*/, ""))}</h3>`;
     } else if (/^##\s/.test(line)) {
-      html += `<h2>${inlineMd(line.replace(/^##\s*/, ""))}</h2>`;
+      currentH2 = line.replace(/^##\s*/, "");
+      html += `<h2>${inlineMd(currentH2)}</h2>`;
     } else if (/^#\s/.test(line)) {
-      // treat a stray h1 in the body as h2
-      html += `<h2>${inlineMd(line.replace(/^#\s*/, ""))}</h2>`;
+      currentH2 = line.replace(/^#\s*/, "");
+      html += `<h2>${inlineMd(currentH2)}</h2>`;
     } else if (line === "---" || line === "***" || line === "___") {
       html += "<hr>";
     } else if (isBullet) {
-      if (!inUl) { html += "<ul>"; inUl = true; }
+      if (!inUl) {
+        html += isSkills() ? '<ul class="skills-list">' : "<ul>";
+        inUl = true;
+      }
       html += `<li>${inlineMd(line.replace(/^[-*•]\s+/, ""))}</li>`;
     } else {
       html += `<p>${inlineMd(line)}</p>`;
@@ -127,17 +135,28 @@ export default function Home() {
 <html>
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
   <title></title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: auto; }
+    @page {
+      margin: 1.5cm 2cm;
+      size: A4;
+    }
+    * { box-sizing: border-box; }
+    html {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      height: auto;
+    }
     body {
+      margin: 0;
+      orphans: 4;
+      widows: 4;
       font-family: Georgia, "Times New Roman", serif;
       color: #1a1a1a;
       font-size: 10.5pt;
       line-height: 1.55;
       max-width: 800px;
-      margin: 0 auto;
       padding: 32px 52px 48px;
     }
     .cv-header {
@@ -169,12 +188,16 @@ export default function Home() {
       border-bottom: 2px solid #1b3554;
       padding-bottom: 3px;
       margin: 18px 0 7px;
+      break-after: avoid;
+      page-break-after: avoid;
     }
     h3 {
       font-size: 10.5pt;
       font-weight: 700;
       color: #1a1a1a;
       margin: 11px 0 2px;
+      break-after: avoid;
+      page-break-after: avoid;
     }
     p  { margin: 3px 0; font-size: 10.5pt; }
     ul, ol { padding-left: 18px; margin: 3px 0 7px; }
@@ -183,12 +206,16 @@ export default function Home() {
     em     { font-style: italic; color: #444; }
     a      { color: #1b3554; text-decoration: none; }
     hr     { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
-    @media print {
-      @page { margin: 1.5cm 2cm; size: A4; }
-      h2 { break-after: avoid; page-break-after: avoid; }
-      h3 { break-after: avoid; page-break-after: avoid; }
-      body > *:last-child { page-break-after: avoid; margin-bottom: 0; }
+    .skills-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 24px;
+      row-gap: 2px;
+      padding-left: 18px;
+      list-style: disc;
     }
+    .skills-list li { break-inside: avoid; page-break-inside: avoid; }
+    .cv-body > *:last-child { page-break-after: avoid; margin-bottom: 0; }
   </style>
 </head>
 <body>
