@@ -45,7 +45,12 @@ export default function Home() {
         }
       }
 
-      if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
+      if (!res.ok) {
+        const msg = data.error ?? `Server error (${res.status})`;
+        // Auto-switch to paste mode so the user can act immediately
+        if (msg.includes("Paste text tab")) setCvMode("paste");
+        throw new Error(msg);
+      }
       setResult(data.result ?? "");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");

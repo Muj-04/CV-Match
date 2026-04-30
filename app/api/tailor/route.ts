@@ -79,6 +79,16 @@ function extractRawPdfText(buffer: Buffer): string {
   return texts.join(" ").replace(/\s+/g, " ").trim();
 }
 
+// Returns true when extracted text is too short or looks like PDF binary
+// artefacts rather than real CV content.
+function looksLikeGarbage(text: string): boolean {
+  const nonSpace = text.replace(/\s/g, "");
+  if (nonSpace.length < 200) return true;
+  // Fewer than 40 % alphabetic characters → mostly numbers / symbols / binary
+  const alphaCount = (text.match(/[a-zA-Z]/g) ?? []).length;
+  return alphaCount / nonSpace.length < 0.4;
+}
+
 async function extractText(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
@@ -142,11 +152,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: message }, { status: 422 });
     }
 
-    if (!cvContent || cvContent.replace(/\s/g, "").length < 80) {
+    if (looksLikeGarbage(cvContent)) {
       return NextResponse.json(
         {
           error:
-            "Could not extract text from this PDF. It may be scanned or image-based. Please use the \"Paste CV text\" option instead.",
+            "We couldn't read your PDF clearly. Please use the Paste text tab and paste your CV directly for best results.",
         },
         { status: 422 }
       );
