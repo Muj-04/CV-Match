@@ -3,33 +3,45 @@ import OpenAI from "openai";
 
 export const maxDuration = 10;
 
-async function extractPdfText(buffer: Buffer): Promise<string> {
-  // Dynamic import of the legacy build — the only pdfjs-dist build that works
-  // in Node.js serverless (no DOMMatrix / browser globals required).
-  const { getDocument, GlobalWorkerOptions } = await import(
-    "pdfjs-dist/legacy/build/pdf.mjs" as string
-  ) as typeof import("pdfjs-dist");
+// Zero-dependency PDF text extraction.
+// Works for text-based PDFs by reading the raw bytes and pulling string
+// literals out of PDF BT/ET (Begin Text / End Text) drawing blocks.
+// Scanned or heavily-compressed PDFs will yield little text — callers
+// should check the result length and surface a helpful error.
+function extractRawPdfText(buffer: Buffer): string {
+  const raw = buffer.toString("latin1");
+  const texts: string[] = [];
 
-  // Disable the web worker — not available in a serverless Lambda.
-  GlobalWorkerOptions.workerSrc = "";
-
-  const data = new Uint8Array(buffer);
-  const pdf = await getDocument({ data, useWorkerFetch: false }).promise;
-
-  const pages: string[] = [];
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const content = await page.getTextContent();
-    const pageText = content.items
-      .filter((item) => "str" in item)
-      .map((item) => (item as { str: string }).str)
-      .join(" ");
-    pages.push(pageText);
-    page.cleanup();
+  // Primary pass: extract strings from BT … ET blocks
+  const btEt = /BT([\s\S]*?)ET/g;
+  let block: RegExpExecArray | null;
+  while ((block = btEt.exec(raw)) !== null) {
+    const strLiteral = /\(([^)\\]*(?:\\.[^)\\]*)*)\)/g;
+    let s: RegExpExecArray | null;
+    while ((s = strLiteral.exec(block[1])) !== null) {
+      const text = s[1]
+        .replace(/\\[nrt]/g, " ")
+        .replace(/\\\(/g, "(")
+        .replace(/\\\)/g, ")")
+        .replace(/\\\\/g, "\\")
+        .trim();
+      if (text) texts.push(text);
+    }
   }
 
-  await pdf.cleanup();
-  return pages.join("\n").trim();
+  // Fallback: if the BT/ET pass came up short (e.g. older PDF structure),
+  // grab any run of 5+ printable ASCII characters instead.
+  if (texts.join("").replace(/\s/g, "").length < 100) {
+    texts.length = 0;
+    const printable = /[ -~\t\r\n]{5,}/g;
+    let m: RegExpExecArray | null;
+    while ((m = printable.exec(raw)) !== null) {
+      const chunk = m[0].trim();
+      if (chunk.length >= 5) texts.push(chunk);
+    }
+  }
+
+  return texts.join(" ").replace(/\s+/g, " ").trim();
 }
 
 async function extractText(file: File): Promise<string> {
@@ -38,7 +50,7 @@ async function extractText(file: File): Promise<string> {
   const name = file.name.toLowerCase();
 
   if (name.endsWith(".pdf") || file.type === "application/pdf") {
-    return extractPdfText(buffer);
+    return extractRawPdfText(buffer);
   }
 
   if (
@@ -72,6 +84,7 @@ export async function POST(req: NextRequest) {
 
   const jobDescription = formData.get("jobDescription");
   const cvFile = formData.get("cv");
+  const cvText = formData.get("cvText");
 
   if (typeof jobDescription !== "string" || !jobDescription.trim()) {
     return NextResponse.json(
@@ -79,26 +92,34 @@ export async function POST(req: NextRequest) {
       { status: 400 }
     );
   }
-  if (!(cvFile instanceof File)) {
-    return NextResponse.json({ error: "CV file is required." }, { status: 400 });
-  }
 
-  let cvText: string;
-  try {
-    cvText = await extractText(cvFile);
-  } catch (err) {
-    const message =
-      err instanceof Error ? err.message : "Could not read the file.";
-    return NextResponse.json({ error: message }, { status: 422 });
-  }
+  // Accept either a pasted CV text string or an uploaded file
+  let cvContent: string;
 
-  if (!cvText) {
+  if (typeof cvText === "string" && cvText.trim()) {
+    cvContent = cvText.trim();
+  } else if (cvFile instanceof File) {
+    try {
+      cvContent = await extractText(cvFile);
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Could not read the file.";
+      return NextResponse.json({ error: message }, { status: 422 });
+    }
+
+    if (!cvContent || cvContent.replace(/\s/g, "").length < 80) {
+      return NextResponse.json(
+        {
+          error:
+            "Could not extract text from this PDF. It may be scanned or image-based. Please use the \"Paste CV text\" option instead.",
+        },
+        { status: 422 }
+      );
+    }
+  } else {
     return NextResponse.json(
-      {
-        error:
-          "No text found in the file. For PDFs, make sure it is not a scanned image.",
-      },
-      { status: 422 }
+      { error: "Please upload a CV file or paste your CV text." },
+      { status: 400 }
     );
   }
 
@@ -132,7 +153,7 @@ ${jobDescription}
 
 ---
 ORIGINAL CV:
-${cvText}`,
+${cvContent}`,
         },
       ],
     });
