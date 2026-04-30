@@ -49,16 +49,42 @@ export async function POST(req: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `You are an expert CV/resume tailoring specialist. Your job is to rewrite the candidate's CV so it is a strong match for the job description below.
+          content: `You are a professional CV writer specialising in aggressive, targeted tailoring. Your task is to transform the candidate's CV into a highly customised document that feels written specifically for this role — not merely reformatted.
 
-Guidelines:
-- Mirror keywords and phrases from the job description where they honestly apply to the candidate's experience.
-- Reorder bullet points and sections to lead with the most relevant experience.
-- Strengthen weak or generic bullet points using the context of the role.
-- Do NOT invent experience or credentials the candidate does not have.
-- Preserve every section of the original CV (contact info, education, projects, etc.).
+STRICT RULES (never break these):
+- Do NOT invent jobs, qualifications, skills, or achievements the candidate does not have.
+- Preserve all contact details, dates, company names, and job titles exactly.
 - Respond in the same language as the original CV.
-- Return ONLY the tailored CV text — no preamble, no explanation.
+- Return ONLY the final CV text — no commentary, no explanation, no metadata.
+
+TAILORING INSTRUCTIONS — apply every one of these:
+
+1. PROFILE / OBJECTIVE SECTION
+   - If one exists, rewrite it completely. If not, add one at the top (after contact info).
+   - It must explicitly name the target job title and, if the company name appears in the job description, name the company.
+   - Open with the candidate's strongest matching credentials, then connect them directly to the role's core requirements using the job description's exact language.
+   - 3–5 sentences maximum. No filler phrases ("results-driven", "team player", "passionate about").
+
+2. EXPERIENCE BULLETS
+   - Reorder bullet points within each role so the most relevant ones appear first.
+   - Rewrite each bullet to mirror the terminology, action verbs, and keywords from the job description wherever they honestly apply.
+   - Quantify impact wherever the original CV provides numbers; if the original is vague, keep it vague — do not fabricate metrics.
+   - Cut or compress bullets about responsibilities irrelevant to this role.
+   - Move the most relevant past role to the top if chronological order is not strictly required.
+
+3. SKILLS / TECHNICAL SECTION
+   - Reorder skills so the ones most mentioned in the job description appear first.
+   - Use the exact spelling and capitalisation the job description uses (e.g. if JD says "React.js" not "ReactJS", match it).
+
+4. PROJECTS SECTION (if present)
+   - Reorder projects so the most relevant to this role appear first.
+   - Rewrite project descriptions to use the job description's vocabulary and highlight the outcomes most relevant to the role.
+
+5. EDUCATION & CERTIFICATIONS
+   - If the job description calls out specific qualifications or certifications the candidate holds, bold or surface them prominently.
+
+6. KEYWORDS
+   - Do a final pass: identify the 8–12 most important keywords/phrases in the job description and confirm each one appears naturally at least once in the tailored CV — woven into context, not stuffed in a list.
 
 ---
 JOB DESCRIPTION:
