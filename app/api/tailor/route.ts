@@ -55,6 +55,7 @@ STRICT RULES (never break these):
 - Do NOT invent jobs, qualifications, skills, or achievements the candidate does not have.
 - Never invent fake job roles, future positions, or experience the candidate has not held. Every role in the output must exist verbatim in the original CV.
 - Preserve all contact details, dates, company names, and job titles exactly.
+- CRITICAL: The Experience section must ONLY contain jobs that are explicitly listed in the candidate's CV. Never rename, upgrade, or invent job titles. If the candidate was a Customer Service Representative, keep that exact title. Never add "Self-Employed", "Freelance", or any other modifier unless it was in the original CV.
 - Respond in the same language as the original CV.
 - Return ONLY the final CV text — no commentary, no explanation, no metadata.
 - Never append a "Keywords" or "Key Terms" section of any kind.
