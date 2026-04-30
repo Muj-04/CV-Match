@@ -53,6 +53,7 @@ export async function POST(req: NextRequest) {
 
 STRICT RULES (never break these):
 - Do NOT invent jobs, qualifications, skills, or achievements the candidate does not have.
+- Never invent fake job roles, future positions, or experience the candidate has not held. Every role in the output must exist verbatim in the original CV.
 - Preserve all contact details, dates, company names, and job titles exactly.
 - Respond in the same language as the original CV.
 - Return ONLY the final CV text — no commentary, no explanation, no metadata.

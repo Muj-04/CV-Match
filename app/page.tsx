@@ -31,7 +31,7 @@ function mdToHtml(md: string): string {
   for (const raw of lines) {
     const line = raw.trim();
 
-    const isBullet = /^[-*•]\s/.test(line);
+    const isBullet = /^[-*•–—]\s/.test(line);
     if (!isBullet) closeList();
 
     if (!line) {
@@ -51,7 +51,7 @@ function mdToHtml(md: string): string {
         html += isSkills() ? '<ul class="skills-list">' : "<ul>";
         inUl = true;
       }
-      html += `<li>${inlineMd(line.replace(/^[-*•]\s+/, ""))}</li>`;
+      html += `<li>${inlineMd(line.replace(/^[-*•–—]\s+/, ""))}</li>`;
     } else {
       html += `<p>${inlineMd(line)}</p>`;
     }
@@ -116,15 +116,21 @@ export default function Home() {
       ? rawLines[nameIdx].trim().replace(/^#+\s*/, "")
       : "";
 
-    // Next non-empty, non-heading line = contact info
-    let contact = "";
+    // Collect consecutive non-heading lines after the name as contact info.
+    // Multiple short lines (email, phone, city on separate lines) are joined
+    // with " | " so they always appear on one line in the PDF header.
+    const contactParts: string[] = [];
     let bodyStart = nameIdx + 1;
     for (let i = nameIdx + 1; i < rawLines.length; i++) {
       const l = rawLines[i].trim();
-      if (!l) continue;
-      if (!l.startsWith("#")) { contact = l; bodyStart = i + 1; }
-      break;
+      if (!l) { if (contactParts.length) { bodyStart = i + 1; break; } continue; }
+      if (l.startsWith("#")) { bodyStart = i; break; }
+      // Split any existing pipe-separated values, trim each piece
+      contactParts.push(...l.split("|").map((s) => s.trim()).filter(Boolean));
+      bodyStart = i + 1;
+      if (contactParts.length >= 6) break; // safety cap
     }
+    const contact = contactParts.join(" | ");
 
     const bodyHtml = mdToHtml(rawLines.slice(bodyStart).join("\n"));
 
@@ -154,8 +160,8 @@ export default function Home() {
       widows: 4;
       font-family: Georgia, "Times New Roman", serif;
       color: #1a1a1a;
-      font-size: 10.5pt;
-      line-height: 1.55;
+      font-size: 11px;
+      line-height: 1.5;
       max-width: 800px;
       padding: 32px 52px 48px;
     }
@@ -166,7 +172,7 @@ export default function Home() {
       border-bottom: 3px solid #1b3554;
     }
     .cv-name {
-      font-size: 28px;
+      font-size: 24px;
       font-weight: bold;
       color: #1b3554;
       font-family: Georgia, serif;
@@ -180,7 +186,7 @@ export default function Home() {
       margin-bottom: 0;
     }
     h2 {
-      font-size: 9.5pt;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
@@ -192,16 +198,16 @@ export default function Home() {
       page-break-after: avoid;
     }
     h3 {
-      font-size: 10.5pt;
+      font-size: 11px;
       font-weight: 700;
       color: #1a1a1a;
       margin: 11px 0 2px;
       break-after: avoid;
       page-break-after: avoid;
     }
-    p  { margin: 3px 0; font-size: 10.5pt; }
+    p  { margin: 3px 0; font-size: 11px; }
     ul, ol { padding-left: 18px; margin: 3px 0 7px; }
-    li { margin: 2px 0; font-size: 10.5pt; }
+    li { margin: 2px 0; font-size: 11px; }
     strong { font-weight: 700; }
     em     { font-style: italic; color: #444; }
     a      { color: #1b3554; text-decoration: none; }
