@@ -366,72 +366,30 @@ export default function Home() {
       </section>
 
       {/* ── Before / After ── */}
-      <section className="bg-white border-b border-gray-100 relative overflow-hidden">
-        <div className="mx-auto max-w-5xl px-4 py-16 sm:py-20">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-10">
+      <section className="bg-white border-b border-gray-100">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
             See the difference
           </p>
-
-          <div className="relative flex items-center justify-center gap-6">
-
-            {/* Left testimonials */}
-            <div className="hidden lg:flex flex-col gap-5 w-48 shrink-0">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 rotate-[-2deg]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-[10px] font-bold flex items-center justify-center shrink-0">AP</div>
-                  <span className="text-xs font-semibold text-gray-700">Alex P.</span>
-                </div>
-                <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Secured 3 interviews in a week!&rdquo;</p>
-              </div>
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 rotate-[1deg] ml-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-[10px] font-bold flex items-center justify-center shrink-0">SJ</div>
-                  <span className="text-xs font-semibold text-gray-700">Sarah J.</span>
-                </div>
-                <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;My CV now makes sense.&rdquo;</p>
-              </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-red-100 bg-red-50/60 p-6">
+              <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-xs font-bold text-red-500 uppercase tracking-wide mb-4">
+                Before
+              </span>
+              <p className="text-sm text-gray-500 leading-relaxed italic">
+                &quot;Responsible for managing social media accounts and creating content.&quot;
+              </p>
             </div>
-
-            {/* Before / After cards */}
-            <div className="grid sm:grid-cols-2 gap-4 flex-1 max-w-xl">
-              <div className="rounded-2xl border border-red-100 bg-red-50/60 p-6">
-                <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-0.5 text-xs font-bold text-red-500 uppercase tracking-wide mb-4">
-                  Before
-                </span>
-                <p className="text-sm text-gray-500 leading-relaxed italic">
-                  &ldquo;Responsible for managing social media accounts and creating content.&rdquo;
-                </p>
-              </div>
-              <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-600 uppercase tracking-wide mb-4">
-                  ✦ After
-                </span>
-                <p className="text-sm text-gray-800 leading-relaxed">
-                  &ldquo;Grew LinkedIn engagement by <strong>47%</strong> and drove a{" "}
-                  <strong>3× increase</strong>{" "}in qualified leads by producing targeted
-                  content aligned with the company&apos;s B2B go-to-market strategy.&rdquo;
-                </p>
-              </div>
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50/60 p-6">
+              <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-0.5 text-xs font-bold text-emerald-600 uppercase tracking-wide mb-4">
+                ✦ After
+              </span>
+              <p className="text-sm text-gray-800 leading-relaxed">
+                &quot;Grew LinkedIn engagement by <strong>47%</strong> and drove a{" "}
+                <strong>3× increase</strong>{" "}in qualified leads by producing targeted
+                content aligned with the company&apos;s B2B go-to-market strategy.&quot;
+              </p>
             </div>
-
-            {/* Right testimonials */}
-            <div className="hidden lg:flex flex-col gap-5 w-48 shrink-0">
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 rotate-[2deg]">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-[10px] font-bold flex items-center justify-center shrink-0">JL</div>
-                  <span className="text-xs font-semibold text-gray-700">James L.</span>
-                </div>
-                <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Landed my dream job. Highly recommend!&rdquo;</p>
-              </div>
-              <div className="bg-white rounded-2xl border border-gray-100 shadow-md p-4 rotate-[-1deg] ml-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-[10px] font-bold flex items-center justify-center shrink-0">MC</div>
-                  <span className="text-xs font-semibold text-gray-700">Maria C.</span>
-                </div>
-                <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Got noticed instantly.&rdquo;</p>
-              </div>
-            </div>
-
           </div>
         </div>
       </section>
