@@ -291,11 +291,43 @@ export default function Home() {
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#000f22] to-[#1b3554]">
+        {/* Circuit pattern background */}
+        <svg className="pointer-events-none absolute inset-0 h-full w-full" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="circuit" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
+              <circle cx="25" cy="25" r="1.5" fill="white" fillOpacity="0.06" />
+              <circle cx="0" cy="0" r="1" fill="white" fillOpacity="0.06" />
+              <circle cx="50" cy="0" r="1" fill="white" fillOpacity="0.06" />
+              <circle cx="0" cy="50" r="1" fill="white" fillOpacity="0.06" />
+              <circle cx="50" cy="50" r="1" fill="white" fillOpacity="0.06" />
+              <path d="M25 25 L50 25 M25 25 L25 50 M25 25 L0 25 M25 25 L25 0" stroke="white" strokeOpacity="0.06" strokeWidth="0.5" />
+              <path d="M0 0 L25 25 M50 0 L25 25 M0 50 L25 25 M50 50 L25 25" stroke="white" strokeOpacity="0.03" strokeWidth="0.5" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#circuit)" />
+        </svg>
+
         {/* Decorative blobs */}
         <div className="pointer-events-none absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
 
-        <div className="relative mx-auto max-w-3xl px-4 py-16 sm:py-28 text-center">
+        {/* Navbar */}
+        <nav className="relative z-10 mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
+          <span className="font-bold text-white text-lg">CV Match</span>
+          <div className="flex items-center gap-6">
+            <div className="hidden sm:flex items-center gap-6">
+              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Home</a>
+              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Features</a>
+              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Pricing</a>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="text-white border border-white/30 rounded-lg px-4 py-1.5 text-sm hover:bg-white/10 transition-colors">Login</button>
+              <button className="bg-white text-[#1b3554] rounded-lg px-4 py-1.5 text-sm font-semibold hover:bg-white/90 transition-colors">Get Started</button>
+            </div>
+          </div>
+        </nav>
+
+        <div className="relative mx-auto max-w-3xl px-4 py-12 sm:py-20 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm mb-6">
             ✦ AI-powered
           </span>
@@ -334,8 +366,40 @@ export default function Home() {
       </section>
 
       {/* ── Before / After ── */}
-      <section className="bg-white border-b border-gray-100">
-        <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+      <section className="relative bg-white border-b border-gray-100">
+        {/* Floating testimonial cards - left side */}
+        <div className="hidden lg:block absolute left-8 top-12 max-w-[180px] bg-white rounded-xl shadow-md p-4 -rotate-2">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white flex items-center justify-center text-xs font-bold">AP</div>
+            <span className="text-xs text-gray-500">Alex P.</span>
+          </div>
+          <p className="text-sm text-gray-700">&ldquo;Secured 3 interviews in a week!&rdquo;</p>
+        </div>
+        <div className="hidden lg:block absolute left-12 bottom-8 max-w-[180px] bg-white rounded-xl shadow-md p-4 rotate-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white flex items-center justify-center text-xs font-bold">SJ</div>
+            <span className="text-xs text-gray-500">Sarah J.</span>
+          </div>
+          <p className="text-sm text-gray-700">&ldquo;My CV now makes sense.&rdquo;</p>
+        </div>
+
+        {/* Floating testimonial cards - right side */}
+        <div className="hidden lg:block absolute right-8 top-8 max-w-[180px] bg-white rounded-xl shadow-md p-4 rotate-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white flex items-center justify-center text-xs font-bold">JL</div>
+            <span className="text-xs text-gray-500">James L.</span>
+          </div>
+          <p className="text-sm text-gray-700">&ldquo;Landed my dream job. Highly recommend!&rdquo;</p>
+        </div>
+        <div className="hidden lg:block absolute right-12 bottom-12 max-w-[180px] bg-white rounded-xl shadow-md p-4 -rotate-1">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white flex items-center justify-center text-xs font-bold">MC</div>
+            <span className="text-xs text-gray-500">Maria C.</span>
+          </div>
+          <p className="text-sm text-gray-700">&ldquo;Got noticed instantly.&rdquo;</p>
+        </div>
+
+        <div className="mx-auto max-w-3xl px-4 lg:px-32 py-12 sm:py-16">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
             See the difference
           </p>
