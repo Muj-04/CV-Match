@@ -72,6 +72,7 @@ export default function Home() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState("");
   const [tailoringMode, setTailoringMode] = useState<"honest" | "hero">("honest");
+  const [isEditing, setIsEditing] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -145,6 +146,7 @@ export default function Home() {
 
       if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
       setResult(data.result ?? "");
+      setIsEditing(false);
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -544,6 +546,27 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setIsEditing(!isEditing)}
+                  className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-2.5 py-1.5 text-xs font-medium text-white transition-colors"
+                >
+                  {isEditing ? (
+                    <>
+                      <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                      </svg>
+                      <span className="hidden sm:inline">Done</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                      </svg>
+                      <span className="hidden sm:inline">Edit</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  type="button"
                   onClick={handleDownloadPdf}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-2.5 py-1.5 text-xs font-medium text-white transition-colors"
                 >
@@ -580,14 +603,23 @@ export default function Home() {
               </div>
             </div>
             {/* Content */}
-            <div
-              ref={resultRef}
-              className="px-4 py-4 sm:px-6 sm:py-6 prose prose-sm max-w-none text-gray-800
-                prose-headings:font-semibold prose-headings:text-gray-900
-                prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
-                prose-strong:text-gray-900 prose-li:my-0.5 prose-hr:border-gray-200"
-            >
-              <ReactMarkdown>{result}</ReactMarkdown>
+            <div ref={resultRef}>
+              {isEditing ? (
+                <textarea
+                  value={result}
+                  onChange={(e) => setResult(e.target.value)}
+                  className="w-full min-h-[500px] px-4 py-4 text-sm text-gray-800 font-mono leading-relaxed resize-y focus:outline-none border-0 bg-transparent"
+                  spellCheck={false}
+                />
+              ) : (
+                <div className="px-4 py-4 sm:px-6 sm:py-6 prose prose-sm max-w-none text-gray-800
+                  prose-headings:font-semibold prose-headings:text-gray-900
+                  prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
+                  prose-strong:text-gray-900 prose-li:my-0.5 prose-hr:border-gray-200"
+                >
+                  <ReactMarkdown>{result}</ReactMarkdown>
+                </div>
+              )}
             </div>
           </div>
         )}
