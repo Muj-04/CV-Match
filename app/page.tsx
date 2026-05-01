@@ -77,27 +77,30 @@ export default function Home() {
   async function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setPdfLoading(true);
     setPdfError("");
-
     try {
-      const pdfjs = await import("pdfjs-dist");
-      pdfjs.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-
+      await new Promise<void>((resolve, reject) => {
+        if ((window as any).pdfjsLib) { resolve(); return; }
+        const script = document.createElement("script");
+        script.src = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js";
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error("Failed to load PDF.js"));
+        document.head.appendChild(script);
+      });
+      const pdfjsLib = (window as any).pdfjsLib;
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
-
+      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
       const textParts: string[] = [];
       for (let i = 1; i <= pdf.numPages; i++) {
         const page = await pdf.getPage(i);
         const content = await page.getTextContent();
         const pageText = content.items
-          .map((item) => ("str" in item ? item.str : ""))
+          .map((item: any) => ("str" in item ? item.str : ""))
           .join(" ");
         textParts.push(pageText);
       }
-
       const extractedText = textParts.join("\n\n").trim();
       if (!extractedText) {
         setPdfError("Could not extract text from this PDF. Please paste your CV text manually instead.");
