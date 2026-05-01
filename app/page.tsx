@@ -103,7 +103,7 @@ export default function Home() {
       }
       const extractedText = textParts.join("\n\n").trim();
       if (!extractedText) {
-        setPdfError("Could not extract text from this PDF. Please paste your CV text manually instead.");
+        setPdfError("This PDF appears to use a design template (e.g. Canva). Please export your CV from Word or Google Docs as a PDF, or paste the text directly.");
       } else {
         setCvText(extractedText);
       }
