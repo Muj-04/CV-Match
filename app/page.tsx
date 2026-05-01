@@ -313,23 +313,7 @@ export default function Home() {
         <div className="pointer-events-none absolute -top-32 -right-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-32 -left-32 h-[28rem] w-[28rem] rounded-full bg-white/10 blur-3xl" />
 
-        {/* Navbar */}
-        <nav className="relative z-10 mx-auto max-w-5xl px-4 py-4 flex items-center justify-between">
-          <span className="font-bold text-white text-lg">CV Match</span>
-          <div className="flex items-center gap-6">
-            <div className="hidden sm:flex items-center gap-6">
-              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Home</a>
-              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Features</a>
-              <a href="#" className="text-white/70 hover:text-white text-sm transition-colors">Pricing</a>
-            </div>
-            <div className="flex items-center gap-2">
-              <button className="text-white border border-white/30 rounded-lg px-4 py-1.5 text-sm hover:bg-white/10 transition-colors">Login</button>
-              <button className="bg-white text-[#1b3554] rounded-lg px-4 py-1.5 text-sm font-semibold hover:bg-white/90 transition-colors">Get Started</button>
-            </div>
-          </div>
-        </nav>
-
-        <div className="relative mx-auto max-w-3xl px-4 py-12 sm:py-20 text-center">
+        <div className="relative mx-auto max-w-3xl px-4 py-16 sm:py-28 text-center">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/25 bg-white/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-white backdrop-blur-sm mb-6">
             ✦ AI-powered
           </span>
