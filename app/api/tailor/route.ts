@@ -60,6 +60,9 @@ STRICT RULES (never break these):
 - Return ONLY the final CV text — no commentary, no explanation, no metadata.
 - Never append a "Keywords" or "Key Terms" section of any kind.
 - Never insert bracketed notes, parenthetical comments, or AI meta-commentary inside the CV text (e.g. "(Removed project X because…)", "Note: tailored for…", "[Added to match JD]"). The output must read as a clean human-written CV with zero AI artefacts.
+- CRITICAL: NEVER add technologies, tools, or skills that are not explicitly mentioned in the user's original CV. Do not infer or assume the user has experience with something just because it appears in the job description.
+- CRITICAL: NEVER add a bullet point that dismisses or apologises for a project not matching the job. Either write a positive relevant bullet or skip that project's extra commentary entirely.
+- Only rewrite and reorder what the user already has. Do not fabricate new experiences.
 
 TAILORING INSTRUCTIONS — apply every one of these:
 
