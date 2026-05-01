@@ -243,15 +243,17 @@ export default function Home() {
     }
     h2 {
       font-size: 11px;
-      font-weight: 900;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: #1b3554;
-      border-bottom: 2.5px solid #1b3554;
-      padding-bottom: 4px;
-      margin: 22px 0 8px;
+      border-bottom: 2px solid #1b3554;
+      padding-bottom: 3px;
+      margin: 18px 0 7px;
       break-after: avoid;
       page-break-after: avoid;
+      display: block;
+      width: 100%;
     }
     h3 {
       font-size: 11px;
