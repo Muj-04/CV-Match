@@ -145,6 +145,7 @@ export default function Home() {
 
       if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
       setResult(data.result ?? "");
+      setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {
