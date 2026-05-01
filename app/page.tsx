@@ -356,7 +356,7 @@ export default function Home() {
               </span>
               <p className="text-sm text-gray-800 leading-relaxed">
                 "Grew LinkedIn engagement by <strong>47%</strong> and drove a{" "}
-                <strong>3× increase</strong> in qualified leads by producing targeted
+                <strong>3× increase</strong>{" "}in qualified leads by producing targeted
                 content aligned with the company&apos;s B2B go-to-market strategy."
               </p>
             </div>
