@@ -237,13 +237,13 @@ export default function Home() {
     }
     h2 {
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 900;
       text-transform: uppercase;
       letter-spacing: 0.12em;
       color: #1b3554;
-      border-bottom: 2px solid #1b3554;
-      padding-bottom: 3px;
-      margin: 20px 0 8px;
+      border-bottom: 2.5px solid #1b3554;
+      padding-bottom: 4px;
+      margin: 22px 0 8px;
       break-after: avoid;
       page-break-after: avoid;
     }
