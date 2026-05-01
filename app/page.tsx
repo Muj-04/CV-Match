@@ -53,7 +53,13 @@ function mdToHtml(md: string): string {
       }
       html += `<li>${inlineMd(line.replace(/^[-*•–—]\s+/, ""))}</li>`;
     } else {
-      html += `<p>${inlineMd(line)}</p>`;
+      const cvSections = /^(Summary|Experience|Education|Projects|Skills|Profile|Objective|Languages|Certifications|Awards|Publications|References)$/i;
+      if (cvSections.test(line)) {
+        currentH2 = line;
+        html += `<h2>${inlineMd(line)}</h2>`;
+      } else {
+        html += `<p>${inlineMd(line)}</p>`;
+      }
     }
   }
   closeList();
