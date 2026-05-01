@@ -2,9 +2,6 @@
 
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import * as pdfjsLib from "pdfjs-dist";
-
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 // ── PDF helpers ────────────────────────────────────────────────────────────
 
@@ -85,8 +82,12 @@ export default function Home() {
     setPdfError("");
 
     try {
+      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
+      const pdfjsWorker = await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
+      pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+      const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
 
       const textParts: string[] = [];
       for (let i = 1; i <= pdf.numPages; i++) {
