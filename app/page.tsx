@@ -366,32 +366,44 @@ export default function Home() {
       </section>
 
       {/* ── Before / After ── */}
-      <section className="relative bg-white border-b border-gray-100 px-4 py-16 sm:py-20">
-        {/* Floating testimonial cards - left side */}
-        <div className="hidden lg:block absolute left-4 lg:left-8 top-8 max-w-[170px] bg-white rounded-2xl p-4 shadow-lg border border-gray-100 rotate-[-3deg] transition hover:scale-105 hover:shadow-xl">
-          <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center mb-2">AP</div>
-          <p className="text-gray-700 text-xs leading-relaxed italic">&ldquo;Secured 3 interviews in a week!&rdquo;</p>
-          <p className="text-gray-400 text-xs mt-2 font-medium">Alex P.</p>
-        </div>
-        <div className="hidden lg:block absolute left-4 lg:left-8 top-40 max-w-[170px] bg-white rounded-2xl p-4 shadow-lg border border-gray-100 rotate-[2deg] transition hover:scale-105 hover:shadow-xl">
-          <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center mb-2">SJ</div>
-          <p className="text-gray-700 text-xs leading-relaxed italic">&ldquo;My CV now makes sense.&rdquo;</p>
-          <p className="text-gray-400 text-xs mt-2 font-medium">Sarah J.</p>
+      <section className="relative overflow-visible py-16 bg-white border-b border-gray-100 min-h-[320px]">
+        {/* Alex P - top left */}
+        <div className="hidden lg:block absolute top-12 left-[2%] rotate-[-3deg] w-44 bg-white rounded-2xl border border-gray-100 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center shrink-0">AP</div>
+            <span className="text-xs font-medium text-gray-700">Alex P.</span>
+          </div>
+          <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Secured 3 interviews in a week!&rdquo;</p>
         </div>
 
-        {/* Floating testimonial cards - right side */}
-        <div className="hidden lg:block absolute right-4 lg:right-8 top-8 max-w-[170px] bg-white rounded-2xl p-4 shadow-lg border border-gray-100 rotate-[2deg] transition hover:scale-105 hover:shadow-xl">
-          <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center mb-2">JL</div>
-          <p className="text-gray-700 text-xs leading-relaxed italic">&ldquo;Landed my dream job. Highly recommend!&rdquo;</p>
-          <p className="text-gray-400 text-xs mt-2 font-medium">James L.</p>
-        </div>
-        <div className="hidden lg:block absolute right-4 lg:right-8 top-40 max-w-[170px] bg-white rounded-2xl p-4 shadow-lg border border-gray-100 rotate-[-2deg] transition hover:scale-105 hover:shadow-xl">
-          <div className="w-8 h-8 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center mb-2">MC</div>
-          <p className="text-gray-700 text-xs leading-relaxed italic">&ldquo;Got noticed instantly.&rdquo;</p>
-          <p className="text-gray-400 text-xs mt-2 font-medium">Maria C.</p>
+        {/* Sarah J - bottom left */}
+        <div className="hidden lg:block absolute top-44 left-[3%] rotate-[2deg] w-44 bg-white rounded-2xl border border-gray-100 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center shrink-0">SJ</div>
+            <span className="text-xs font-medium text-gray-700">Sarah J.</span>
+          </div>
+          <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;My CV now makes sense.&rdquo;</p>
         </div>
 
-        <div className="mx-auto max-w-xl">
+        {/* James L - top right */}
+        <div className="hidden lg:block absolute top-12 right-[2%] rotate-[2deg] w-44 bg-white rounded-2xl border border-gray-100 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center shrink-0">JL</div>
+            <span className="text-xs font-medium text-gray-700">James L.</span>
+          </div>
+          <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Landed my dream job. Highly recommend!&rdquo;</p>
+        </div>
+
+        {/* Maria C - bottom right */}
+        <div className="hidden lg:block absolute top-44 right-[3%] rotate-[-2deg] w-44 bg-white rounded-2xl border border-gray-100 shadow-lg p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-7 h-7 rounded-full bg-[#1b3554] text-white text-xs font-bold flex items-center justify-center shrink-0">MC</div>
+            <span className="text-xs font-medium text-gray-700">Maria C.</span>
+          </div>
+          <p className="text-xs text-gray-500 italic leading-relaxed">&ldquo;Got noticed instantly.&rdquo;</p>
+        </div>
+
+        <div className="mx-auto max-w-lg px-4">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
             See the difference
           </p>
