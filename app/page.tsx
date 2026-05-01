@@ -210,8 +210,8 @@ export default function Home() {
       widows: 4;
       font-family: Georgia, "Times New Roman", serif;
       color: #1a1a1a;
-      font-size: 11px;
-      line-height: 1.5;
+      font-size: 10.5px;
+      line-height: 1.45;
       max-width: 800px;
       padding: 32px 52px 48px;
     }
@@ -236,14 +236,14 @@ export default function Home() {
       margin-bottom: 0;
     }
     h2 {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: #1b3554;
       border-bottom: 2px solid #1b3554;
       padding-bottom: 3px;
-      margin: 18px 0 7px;
+      margin: 20px 0 8px;
       break-after: avoid;
       page-break-after: avoid;
     }
