@@ -71,6 +71,7 @@ export default function Home() {
   const [copied, setCopied] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
   const [pdfError, setPdfError] = useState("");
+  const [tailoringMode, setTailoringMode] = useState<"honest" | "hero">("honest");
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -128,6 +129,7 @@ export default function Home() {
       const body = new FormData();
       body.append("jobDescription", jobDescription);
       body.append("cvText", cvText.trim());
+      body.append("mode", tailoringMode);
 
       const res = await fetch("/api/tailor", { method: "POST", body });
 
@@ -430,6 +432,42 @@ export default function Home() {
               {pdfError && (
                 <p className="mt-2 text-sm text-red-600">{pdfError}</p>
               )}
+            </div>
+
+            {/* Mode toggle */}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Tailoring mode
+              </label>
+              <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+                <button
+                  type="button"
+                  onClick={() => setTailoringMode("honest")}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                    tailoringMode === "honest"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Honest
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setTailoringMode("hero")}
+                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                    tailoringMode === "hero"
+                      ? "bg-white text-gray-900 shadow-sm"
+                      : "text-gray-500 hover:text-gray-700"
+                  }`}
+                >
+                  Hero
+                </button>
+              </div>
+              <p className="mt-1.5 text-xs text-gray-500">
+                {tailoringMode === "honest"
+                  ? "Safe and accurate — no embellishment"
+                  : "Bold and achievement-focused — maximum impact"}
+              </p>
             </div>
 
             {/* Submit */}
