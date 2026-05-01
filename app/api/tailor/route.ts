@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
 
   const jobDescription = formData.get("jobDescription");
   const cvText = formData.get("cvText");
+  const mode = formData.get("mode");
 
   if (typeof jobDescription !== "string" || !jobDescription.trim()) {
     return NextResponse.json({ error: "Job description is required." }, { status: 400 });
@@ -26,16 +27,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please paste your CV text." }, { status: 400 });
   }
 
-  const client = new Anthropic({ apiKey });
+  const isHeroMode = mode === "hero";
 
-  try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-5",
-      max_tokens: 4096,
-      messages: [
-        {
-          role: "user",
-          content: `You are a professional CV writer specialising in aggressive, targeted tailoring. Your task is to transform the candidate's CV into a highly customised document that feels written specifically for this role — not merely reformatted.
+  const honestPrompt = `You are a professional CV writer specialising in aggressive, targeted tailoring. Your task is to transform the candidate's CV into a highly customised document that feels written specifically for this role — not merely reformatted.
 
 STRICT RULES (never break these):
 - Do NOT invent jobs, qualifications, skills, or achievements the candidate does not have.
@@ -63,7 +57,55 @@ ${jobDescription}
 
 ---
 ORIGINAL CV:
-${cvText.trim()}`
+${cvText.trim()}`;
+
+  const heroPrompt = `You are an elite CV writer who transforms good candidates into irresistible ones. Your task is to rewrite this CV so powerfully that the hiring manager feels they MUST interview this person.
+
+HARD LIMITS (never cross these):
+- NEVER invent jobs, companies, dates, or tools not in the original CV.
+- Preserve all contact details, dates, company names, and job titles exactly.
+- The Experience section must ONLY contain jobs explicitly listed in the candidate's CV.
+- Respond in the same language as the original CV.
+- Return ONLY the final CV text — no commentary, no explanation, no metadata.
+- Never append a "Keywords" section or insert bracketed notes.
+
+HERO MODE INSTRUCTIONS — write like a top-tier candidate:
+
+1. PROFILE: Write a commanding 3-4 sentence summary that positions this candidate as the obvious choice. Lead with their strongest credential, connect it to the role's core need, and close with a confident statement of value. No weak phrases like "seeking opportunity" or "looking to grow".
+
+2. EXPERIENCE BULLETS: Transform every bullet into an achievement, not a duty.
+   - Use powerful action verbs: Led, Drove, Delivered, Spearheaded, Transformed, Accelerated, Captured, Secured.
+   - Frame everything as impact: not "responsible for" but "delivered", not "helped with" but "drove".
+   - If the original has numbers, amplify their presentation. If vague, imply scale confidently ("across multiple teams", "at enterprise scale", "serving thousands").
+   - You MAY infer soft skills and transferable strengths from context (e.g. if they led a project, you can say they demonstrated leadership).
+   - Reorder so the most impressive, relevant bullets appear first.
+
+3. SKILLS: Reorder to lead with the most in-demand skills for this role. Match the JD's exact terminology.
+
+4. PROJECTS: Reframe each project as a strategic initiative with clear outcomes. Lead with impact, not process.
+
+5. KEYWORDS: Ensure the 8-12 most critical JD keywords appear naturally and prominently.
+
+Write this CV as if the candidate is already a top performer who belongs in this role.
+
+---
+JOB DESCRIPTION:
+${jobDescription}
+
+---
+ORIGINAL CV:
+${cvText.trim()}`;
+
+  const client = new Anthropic({ apiKey });
+
+  try {
+    const message = await client.messages.create({
+      model: "claude-sonnet-4-5",
+      max_tokens: 4096,
+      messages: [
+        {
+          role: "user",
+          content: isHeroMode ? heroPrompt : honestPrompt
         }
       ]
     });
