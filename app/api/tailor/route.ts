@@ -42,6 +42,7 @@ ABSOLUTE RULES — these override everything else:
 - Preserve all contact details, dates, company names, and job titles exactly.
 - Return ONLY the final CV text. No commentary, no notes, no metadata.
 - Respond in the same language as the original CV.
+- Never repeat the same bullet point twice within the same job entry. Each bullet must be meaningfully different from every other bullet in the same role.
 
 WHAT YOU ARE ALLOWED TO DO:
 - Reorder bullet points within a role so the most relevant ones appear first.
