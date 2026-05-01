@@ -82,9 +82,8 @@ export default function Home() {
     setPdfError("");
 
     try {
-      const pdfjs = await import("pdfjs-dist/legacy/build/pdf.mjs");
-      const pdfjsWorker = await import("pdfjs-dist/legacy/build/pdf.worker.mjs");
-      pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
+      const pdfjs = await import("pdfjs-dist");
+      pdfjs.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js`;
 
       const arrayBuffer = await file.arrayBuffer();
       const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
