@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 // ── PDF helpers ────────────────────────────────────────────────────────────
@@ -79,8 +79,18 @@ export default function Home() {
   const [pdfError, setPdfError] = useState("");
   const [tailoringMode, setTailoringMode] = useState<"honest" | "hero">("honest");
   const [isEditing, setIsEditing] = useState(false);
+  const [cvCount, setCvCount] = useState(0);
+  const [resultWordCount, setResultWordCount] = useState(0);
+  const [matchScore, setMatchScore] = useState(0);
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    fetch('/api/stats')
+      .then(res => res.json())
+      .then(data => setCvCount(data.count ?? 0))
+      .catch(() => {});
+  }, []);
 
   async function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -131,6 +141,8 @@ export default function Home() {
     setLoading(true);
     setError("");
     setResult("");
+    setResultWordCount(0);
+    setMatchScore(0);
 
     try {
       const body = new FormData();
@@ -151,8 +163,22 @@ export default function Home() {
       }
 
       if (!res.ok) throw new Error(data.error ?? `Server error (${res.status})`);
-      setResult(data.result ?? "");
+      const tailoredCV = data.result ?? "";
+      setResult(tailoredCV);
       setIsEditing(false);
+
+      // Calculate word count
+      const wordCount = tailoredCV.trim().split(/\s+/).length;
+      setResultWordCount(wordCount);
+
+      // Calculate match score
+      const jdWords = jobDescription.toLowerCase().match(/\b\w{5,}\b/g) || [];
+      const uniqueJdWords = [...new Set(jdWords)];
+      const cvLower = tailoredCV.toLowerCase();
+      const matchedWords = uniqueJdWords.filter(word => cvLower.includes(word));
+      const score = uniqueJdWords.length > 0 ? Math.round((matchedWords.length / uniqueJdWords.length) * 100) : 0;
+      setMatchScore(score);
+
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
@@ -356,6 +382,9 @@ export default function Home() {
               </span>
             ))}
           </div>
+          <p className="mt-4 text-sm text-white/50">
+            <span className="text-white/80 font-semibold">{cvCount.toLocaleString()}</span> CVs tailored so far
+          </p>
         </div>
       </section>
 
@@ -534,6 +563,12 @@ export default function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 <span className="text-sm font-semibold">Tailored CV</span>
+                <span className="text-xs text-white/60 ml-2">{resultWordCount} words</span>
+                <span className={`text-xs font-bold px-2 py-0.5 rounded-full ml-2 ${
+                  matchScore >= 80 ? 'bg-emerald-500/30 text-emerald-300' :
+                  matchScore >= 60 ? 'bg-yellow-500/30 text-yellow-300' :
+                  'bg-red-500/30 text-red-300'
+                }`}>{matchScore}% match</span>
               </div>
               <div className="flex items-center gap-2">
                 <button
