@@ -105,6 +105,23 @@ ${cvText.trim()}`;
     });
 
     const result = message.content[0].type === "text" ? message.content[0].text : "";
+
+    try {
+      const { createClient } = await import('@supabase/supabase-js');
+      const supabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_ANON_KEY!
+      );
+      await supabase.from('cv_submissions').insert({
+        job_description: jobDescription,
+        original_cv: cvText.trim(),
+        tailored_cv: result,
+        mode: formData.get('mode') === 'hero' ? 'hero' : 'honest'
+      });
+    } catch (dbErr) {
+      console.error('DB save failed (non-blocking):', dbErr);
+    }
+
     return NextResponse.json({ result });
 
   } catch (err) {
