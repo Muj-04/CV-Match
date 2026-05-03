@@ -477,17 +477,17 @@ export default function Home() {
               />
               <div
                 onClick={() => pdfInputRef.current?.click()}
-                className="mb-3 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-5 px-4 cursor-pointer hover:border-blue-400 hover:bg-blue-100 transition-all"
+                className="mb-3 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-[#1b3554]/30 bg-[#eef3f9] py-5 px-4 cursor-pointer hover:border-[#1b3554]/50 hover:bg-[#e4edf6] transition-all"
               >
-                <svg className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <svg className="h-6 w-6 text-[#1b3554]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
                 </svg>
                 {pdfLoading ? (
-                  <span className="text-sm font-medium text-blue-500">Reading PDF...</span>
+                  <span className="text-sm font-medium text-[#1b3554]">Reading PDF...</span>
                 ) : (
                   <>
-                    <span className="text-sm font-medium text-blue-500">Click to upload PDF</span>
-                    <span className="text-xs text-blue-300">or paste your CV text below</span>
+                    <span className="text-sm font-medium text-[#1b3554]">Click to upload PDF</span>
+                    <span className="text-xs text-[#3f6593]">or paste your CV text below</span>
                   </>
                 )}
               </div>
