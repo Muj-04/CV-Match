@@ -82,6 +82,9 @@ export default function Home() {
   const [cvCount, setCvCount] = useState(0);
   const [resultWordCount, setResultWordCount] = useState(0);
   const [matchScore, setMatchScore] = useState(0);
+  const [showLengthWarning, setShowLengthWarning] = useState(false);
+  const [showComparison, setShowComparison] = useState(false);
+  const [isRtl, setIsRtl] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -143,6 +146,9 @@ export default function Home() {
     setResult("");
     setResultWordCount(0);
     setMatchScore(0);
+    setShowLengthWarning(false);
+    setShowComparison(false);
+    setIsRtl(false);
 
     try {
       const body = new FormData();
@@ -170,6 +176,7 @@ export default function Home() {
       // Calculate word count
       const wordCount = tailoredCV.trim().split(/\s+/).length;
       setResultWordCount(wordCount);
+      setShowLengthWarning(wordCount > 700);
 
       // Calculate match score
       const calculateMatchScore = (jd: string, cv: string): number => {
@@ -204,6 +211,10 @@ export default function Home() {
 
       const displayScore = scaleScore(score);
       setMatchScore(displayScore);
+
+      // Detect Arabic text for RTL support
+      const isArabic = /[؀-ۿ]/.test(tailoredCV);
+      setIsRtl(isArabic);
 
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     } catch (err) {
@@ -599,6 +610,18 @@ export default function Home() {
               <div className="flex items-center gap-2">
                 <button
                   type="button"
+                  onClick={() => setShowComparison(!showComparison)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white transition-colors ${
+                    showComparison ? 'bg-white/40' : 'bg-white/20 hover:bg-white/30'
+                  }`}
+                >
+                  <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                  </svg>
+                  <span className="hidden sm:inline">Compare</span>
+                </button>
+                <button
+                  type="button"
                   onClick={() => setIsEditing(!isEditing)}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-white/20 hover:bg-white/30 px-2.5 py-1.5 text-xs font-medium text-white transition-colors"
                 >
@@ -657,18 +680,56 @@ export default function Home() {
             </div>
             {/* Content */}
             <div ref={resultRef}>
+              {showLengthWarning && (
+                <div className="mx-4 mt-4 sm:mx-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 flex items-start gap-2">
+                  <svg className="h-5 w-5 shrink-0 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                  </svg>
+                  <span><strong>Your CV is over 700 words.</strong> Most recruiters prefer 1-2 pages. Consider trimming less relevant details.</span>
+                </div>
+              )}
               {isEditing ? (
                 <textarea
                   value={result}
                   onChange={(e) => setResult(e.target.value)}
                   className="w-full min-h-[500px] px-4 py-4 text-sm text-gray-800 font-mono leading-relaxed resize-y focus:outline-none border-0 bg-transparent"
+                  dir={isRtl ? "rtl" : "ltr"}
                   spellCheck={false}
                 />
+              ) : showComparison ? (
+                <div className="grid sm:grid-cols-2 gap-4 p-4 sm:p-6">
+                  <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                    <span className="inline-flex items-center rounded-full bg-gray-200 px-2.5 py-0.5 text-xs font-semibold text-gray-600 mb-3">Original</span>
+                    <div
+                      className="prose prose-sm max-w-none text-gray-600"
+                      dir={isRtl ? "rtl" : "ltr"}
+                      style={{ textAlign: isRtl ? "right" : "left" }}
+                    >
+                      <pre className="whitespace-pre-wrap font-sans text-sm">{cvText}</pre>
+                    </div>
+                  </div>
+                  <div className="rounded-lg border border-emerald-200 bg-emerald-50/50 p-4">
+                    <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-700 mb-3">Tailored</span>
+                    <div
+                      className="prose prose-sm max-w-none text-gray-800
+                        prose-headings:font-semibold prose-headings:text-gray-900
+                        prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
+                        prose-strong:text-gray-900 prose-li:my-0.5 prose-hr:border-gray-200"
+                      dir={isRtl ? "rtl" : "ltr"}
+                      style={{ textAlign: isRtl ? "right" : "left" }}
+                    >
+                      <ReactMarkdown>{result}</ReactMarkdown>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <div className="px-4 py-4 sm:px-6 sm:py-6 prose prose-sm max-w-none text-gray-800
-                  prose-headings:font-semibold prose-headings:text-gray-900
-                  prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
-                  prose-strong:text-gray-900 prose-li:my-0.5 prose-hr:border-gray-200"
+                <div
+                  className="px-4 py-4 sm:px-6 sm:py-6 prose prose-sm max-w-none text-gray-800
+                    prose-headings:font-semibold prose-headings:text-gray-900
+                    prose-h1:text-xl prose-h2:text-lg prose-h3:text-base
+                    prose-strong:text-gray-900 prose-li:my-0.5 prose-hr:border-gray-200"
+                  dir={isRtl ? "rtl" : "ltr"}
+                  style={{ textAlign: isRtl ? "right" : "left" }}
                 >
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
