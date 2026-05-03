@@ -465,47 +465,36 @@ export default function Home() {
 
             {/* CV text */}
             <div>
-              <div className="flex items-center justify-between mb-1.5">
-                <label className="text-sm font-semibold text-gray-700">
-                  Your CV
-                </label>
-                <div>
-                  <input
-                    ref={pdfInputRef}
-                    type="file"
-                    accept=".pdf"
-                    onChange={handlePdfUpload}
-                    className="hidden"
-                  />
-                  <button
-                    type="button"
-                    disabled={pdfLoading}
-                    onClick={() => pdfInputRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-                  >
-                    {pdfLoading ? (
-                      <>
-                        <svg className="animate-spin h-3.5 w-3.5" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                        </svg>
-                        Reading PDF…
-                      </>
-                    ) : (
-                      <>
-                        <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M9 8.25H7.5a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25H15m0-3l-3-3m0 0l-3 3m3-3V15" />
-                        </svg>
-                        Upload PDF
-                      </>
-                    )}
-                  </button>
-                </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+                Your CV
+              </label>
+              <input
+                ref={pdfInputRef}
+                type="file"
+                accept=".pdf"
+                onChange={handlePdfUpload}
+                className="hidden"
+              />
+              <div
+                onClick={() => pdfInputRef.current?.click()}
+                className="mb-3 flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-5 px-4 cursor-pointer hover:border-blue-400 hover:bg-blue-100 transition-all"
+              >
+                <svg className="h-6 w-6 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                </svg>
+                {pdfLoading ? (
+                  <span className="text-sm font-medium text-blue-500">Reading PDF...</span>
+                ) : (
+                  <>
+                    <span className="text-sm font-medium text-blue-500">Click to upload PDF</span>
+                    <span className="text-xs text-blue-300">or paste your CV text below</span>
+                  </>
+                )}
               </div>
               <textarea
                 value={cvText}
                 onChange={(e) => { setCvText(e.target.value); setPdfError(""); }}
-                placeholder="Paste your CV text here — or use the Upload PDF button above"
+                placeholder="Paste your CV text here"
                 rows={10}
                 className="w-full rounded-xl border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm text-gray-900 placeholder-gray-400 focus:border-[#5b86b6] focus:bg-white focus:outline-none focus:ring-3 focus:ring-[#3f6593]/15 resize-y transition-all"
               />
