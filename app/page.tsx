@@ -360,7 +360,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f2faff]">
+    <div className="min-h-screen flex flex-col bg-[#eef3f9]">
 
       {/* ── Hero ── */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#000f22] to-[#1b3554]">
@@ -426,7 +426,7 @@ export default function Home() {
       </section>
 
       {/* ── Before / After ── */}
-      <section className="bg-white border-b border-gray-100">
+      <section className="bg-[#eef3f9] border-b border-gray-200">
         <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
           <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-8">
             See the difference
@@ -740,7 +740,7 @@ export default function Home() {
       </section>
 
       {/* ── Footer ── */}
-      <footer className="border-t border-gray-100 bg-white">
+      <footer className="border-t border-gray-200 bg-[#eef3f9]">
         <div className="mx-auto max-w-3xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400">
           <span className="font-semibold text-gray-500">CV Match</span>
           <span>Built with AI — tailor every application in seconds</span>
