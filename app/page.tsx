@@ -515,39 +515,49 @@ export default function Home() {
             </div>
 
             {/* Mode toggle */}
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <div className="space-y-2">
+              <label className="block text-sm font-semibold text-gray-700 mb-3">
                 Tailoring mode
               </label>
-              <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-1">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setTailoringMode("honest")}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                  className={`text-left rounded-xl border-2 p-4 transition-all ${
                     tailoringMode === "honest"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "border-[#3f6593] bg-[#f0f6ff]"
+                      : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
+                  style={tailoringMode === "honest" ? { borderLeft: "4px solid #3f6593" } : {}}
                 >
-                  Honest
+                  <div className="text-sm font-semibold text-[#1b3554] mb-1">Honest</div>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Rewrites only what's in your CV. Safe to send to any employer.
+                  </div>
+                  <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700">
+                    Safe to send
+                  </span>
                 </button>
+
                 <button
                   type="button"
                   onClick={() => setTailoringMode("hero")}
-                  className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                  className={`text-left rounded-xl border-2 p-4 transition-all ${
                     tailoringMode === "hero"
-                      ? "bg-white text-gray-900 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
+                      ? "border-[#1b3554] bg-[#f0f4f9]"
+                      : "border-gray-200 bg-white hover:border-gray-300"
                   }`}
+                  style={tailoringMode === "hero" ? { borderLeft: "4px solid #1b3554" } : {}}
                 >
-                  Hero
+                  <div className="text-sm font-semibold text-[#1b3554] mb-1">Hero</div>
+                  <div className="text-xs text-gray-500 leading-relaxed">
+                    Bold, confident language. Maximum impact from your real experience.
+                  </div>
+                  <span className="inline-block mt-2 text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-700">
+                    Max impact
+                  </span>
                 </button>
               </div>
-              <p className="mt-1.5 text-xs text-gray-500">
-                {tailoringMode === "honest"
-                  ? "Safe and accurate — no embellishment"
-                  : "Bold and achievement-focused — maximum impact"}
-              </p>
             </div>
 
             {/* Submit */}
