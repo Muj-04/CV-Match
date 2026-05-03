@@ -195,7 +195,15 @@ export default function Home() {
       };
 
       const score = calculateMatchScore(jobDescription, tailoredCV);
-      setMatchScore(score);
+
+      const scaleScore = (raw: number): number => {
+        const min = 55;
+        const max = 98;
+        return Math.round(min + (raw / 100) * (max - min));
+      };
+
+      const displayScore = scaleScore(score);
+      setMatchScore(displayScore);
 
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
     } catch (err) {
