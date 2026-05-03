@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 
 // ── PDF helpers ────────────────────────────────────────────────────────────
@@ -79,7 +79,6 @@ export default function Home() {
   const [pdfError, setPdfError] = useState("");
   const [tailoringMode, setTailoringMode] = useState<"honest" | "hero">("honest");
   const [isEditing, setIsEditing] = useState(false);
-  const [cvCount, setCvCount] = useState(0);
   const [resultWordCount, setResultWordCount] = useState(0);
   const [matchScore, setMatchScore] = useState(0);
   const [showLengthWarning, setShowLengthWarning] = useState(false);
@@ -87,13 +86,6 @@ export default function Home() {
   const [isRtl, setIsRtl] = useState(false);
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    fetch('/api/stats')
-      .then(res => res.json())
-      .then(data => setCvCount(data.count ?? 0))
-      .catch(() => {});
-  }, []);
 
   async function handlePdfUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -419,9 +411,6 @@ export default function Home() {
               </span>
             ))}
           </div>
-          <p className="mt-4 text-sm text-white/50">
-            <span className="text-white/80 font-semibold">{cvCount.toLocaleString()}</span> CVs tailored so far
-          </p>
         </div>
       </section>
 
