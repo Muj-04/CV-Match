@@ -172,11 +172,29 @@ export default function Home() {
       setResultWordCount(wordCount);
 
       // Calculate match score
-      const jdWords = jobDescription.toLowerCase().match(/\b\w{5,}\b/g) || [];
-      const uniqueJdWords = [...new Set(jdWords)];
-      const cvLower = tailoredCV.toLowerCase();
-      const matchedWords = uniqueJdWords.filter(word => cvLower.includes(word));
-      const score = uniqueJdWords.length > 0 ? Math.round((matchedWords.length / uniqueJdWords.length) * 100) : 0;
+      const calculateMatchScore = (jd: string, cv: string): number => {
+        const jdLower = jd.toLowerCase();
+        const cvLower = cv.toLowerCase();
+
+        const stopWords = new Set(['about', 'above', 'after', 'again', 'their',
+          'there', 'these', 'those', 'would', 'could', 'should', 'which',
+          'while', 'where', 'other', 'being', 'every', 'through', 'during',
+          'before', 'between', 'having', 'within', 'without', 'across']);
+
+        const words = jdLower.match(/\b[a-z]{5,}\b/g) || [];
+        const keywords = [...new Set(words)].filter(w => !stopWords.has(w));
+
+        if (keywords.length === 0) return 0;
+
+        const matched = keywords.filter(keyword => {
+          const stem = keyword.slice(0, Math.floor(keyword.length * 0.8));
+          return cvLower.includes(stem);
+        });
+
+        return Math.round((matched.length / keywords.length) * 100);
+      };
+
+      const score = calculateMatchScore(jobDescription, tailoredCV);
       setMatchScore(score);
 
       setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
