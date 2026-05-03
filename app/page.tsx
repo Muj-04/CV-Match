@@ -444,8 +444,31 @@ export default function Home() {
       </section>
 
       {/* ── Form ── */}
-      <section className="flex-1 mx-auto w-full max-w-2xl px-4 py-10 sm:py-16">
-        <div className="rounded-2xl bg-white shadow-xl shadow-gray-200/80 border border-gray-100 p-6 sm:p-8">
+      <section className="relative flex-1 overflow-hidden bg-white">
+
+        {/* Left diagonal gradient panel */}
+        <div
+          className="absolute top-0 left-0 bottom-0 pointer-events-none"
+          style={{
+            width: '42%',
+            background: 'linear-gradient(180deg, #000f22 0%, #3f6593 100%)',
+            clipPath: 'polygon(0 0, 100% 0, 67% 100%, 0 100%)'
+          }}
+        />
+
+        {/* Accent line on the diagonal edge */}
+        <div
+          className="absolute top-0 left-0 bottom-0 pointer-events-none"
+          style={{
+            width: '42%',
+            background: 'linear-gradient(180deg, #c0e6fd, #3f6593)',
+            clipPath: 'polygon(98% 0, 100% 0, 67% 100%, 65% 100%)'
+          }}
+        />
+
+        {/* Form content centered */}
+        <div className="relative z-10 mx-auto w-full max-w-2xl px-4 py-10 sm:py-16">
+          <div className="rounded-2xl bg-white shadow-xl shadow-gray-200/80 border border-gray-100 p-6 sm:p-8">
           <h2 className="text-lg font-bold text-gray-900 mb-6">Tailor your CV</h2>
 
           <form onSubmit={handleSubmit} className="space-y-5">
@@ -725,6 +748,7 @@ export default function Home() {
             </div>
           </div>
         )}
+        </div>
       </section>
 
       {/* ── Footer ── */}
