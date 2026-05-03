@@ -144,28 +144,50 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ── Testimonials ── */}
-      <section className="bg-[#eef3f9]">
-        <div className="mx-auto max-w-4xl px-4 py-16 sm:py-20">
-          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-12">
-            What users say
+      {/* ── Feature Highlights ── */}
+      <section className="bg-[#eef3f9] border-b border-gray-100">
+        <div className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
+          <p className="text-center text-xs font-semibold uppercase tracking-widest text-gray-400 mb-10">
+            Why CV Match is different
           </p>
           <div className="grid sm:grid-cols-3 gap-6">
-            {[
-              { quote: "Secured 3 interviews in a week!", name: "Alex P.", initials: "AP" },
-              { quote: "My CV now makes sense.", name: "Sarah J.", initials: "SJ" },
-              { quote: "Landed my dream job. Highly recommend!", name: "James L.", initials: "JL" }
-            ].map(({ quote, name, initials }) => (
-              <div key={name} className="rounded-2xl bg-white border border-gray-100 p-6 shadow-sm">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="flex items-center justify-center h-10 w-10 rounded-full bg-[#1b3554] text-white text-sm font-bold">
-                    {initials}
-                  </div>
-                  <span className="text-sm font-semibold text-gray-700">{name}</span>
-                </div>
-                <p className="text-sm text-gray-600 leading-relaxed">&quot;{quote}&quot;</p>
+
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="w-10 h-10 rounded-xl bg-[#1b3554] flex items-center justify-center mb-4">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-            ))}
+              <h3 className="text-sm font-semibold text-[#1b3554] mb-2">Never fabricates</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Every word in your tailored CV comes from your real experience. No invented skills, no fake job titles — ever.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="w-10 h-10 rounded-xl bg-[#1b3554] flex items-center justify-center mb-4">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-[#1b3554] mb-2">Two tailoring modes</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Honest mode for safe, accurate applications. Hero mode for bold, confident language — both without fabrication.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-gray-100 p-6">
+              <div className="w-10 h-10 rounded-xl bg-[#1b3554] flex items-center justify-center mb-4">
+                <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621a48.474 48.474 0 016-.371m0 0c1.12 0 2.233.038 3.334.114M9 5.25V3m3.334 2.364C11.176 10.658 7.69 15.08 3 17.502m9.334-12.138c.896.061 1.785.147 2.666.257m-4.589 8.495a18.023 18.023 0 01-3.827-5.802" />
+                </svg>
+              </div>
+              <h3 className="text-sm font-semibold text-[#1b3554] mb-2">Arabic & English</h3>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                Full RTL layout support for Arabic CVs. The app automatically detects the language and adapts accordingly.
+              </p>
+            </div>
+
           </div>
         </div>
       </section>
