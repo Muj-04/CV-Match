@@ -112,6 +112,7 @@ ${cvText.trim()}`;
         process.env.SUPABASE_URL!,
         process.env.SUPABASE_ANON_KEY!
       );
+      console.log('Saving to Supabase URL:', process.env.SUPABASE_URL);
       await supabase.from('cv_submissions').insert({
         job_description: jobDescription,
         original_cv: cvText.trim(),
@@ -119,7 +120,7 @@ ${cvText.trim()}`;
         mode: formData.get('mode') === 'hero' ? 'hero' : 'honest'
       });
     } catch (dbErr) {
-      console.error('DB save failed (non-blocking):', dbErr);
+      console.error('DB save failed:', JSON.stringify(dbErr));
     }
 
     return NextResponse.json({ result });
