@@ -118,6 +118,7 @@ ${cvText.trim()}`;
         const modeValue = formData.get('mode');
         const insertMode = modeValue === 'hero' ? 'hero' : 'honest';
         console.log('Inserting with mode:', insertMode);
+        await new Promise(resolve => setTimeout(resolve, 2000));
         const { data, error } = await supabase.from('cv_submissions').insert({
           job_description: jobDescription,
           original_cv: cvText.trim(),
