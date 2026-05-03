@@ -32,6 +32,7 @@ export async function POST(req: NextRequest) {
   const honestPrompt = `You are a professional CV writer. Your only job is to rewrite and reorder the candidate's existing CV to better match the job description. You are NOT allowed to add anything new.
 
 ABSOLUTE RULES — these override everything else:
+- ABSOLUTE RULE: You are a rewriter, not a writer. Every single bullet point in the Experience section must be a rewritten version of a bullet that already exists in the original CV. You cannot add new bullets to any job entry. Count the bullets in the original CV for each role and never output more bullets than that count for the same role.
 - Every single word in the output must come from the original CV. No exceptions.
 - NEVER add any skill, tool, technology, framework, or methodology that does not appear word-for-word in the original CV.
 - NEVER add: RAG, Docker, AWS, FastAPI, REST API, PostgreSQL, vector databases, containerisation, orchestration, model evaluation, feedback loops, or ANY other term from the job description unless it is already in the original CV.
