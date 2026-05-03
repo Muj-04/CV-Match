@@ -108,17 +108,28 @@ ${cvText.trim()}`;
 
     try {
       const { createClient } = await import('@supabase/supabase-js');
-      const supabase = createClient(
-        process.env.SUPABASE_URL!,
-        process.env.SUPABASE_ANON_KEY!
-      );
-      console.log('Saving to Supabase URL:', process.env.SUPABASE_URL);
-      await supabase.from('cv_submissions').insert({
-        job_description: jobDescription,
-        original_cv: cvText.trim(),
-        tailored_cv: result,
-        mode: formData.get('mode') === 'hero' ? 'hero' : 'honest'
-      });
+      const supabaseUrl = process.env.SUPABASE_URL;
+      const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseKey) {
+        console.error('Missing Supabase env vars');
+      } else {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        const modeValue = formData.get('mode');
+        const insertMode = modeValue === 'hero' ? 'hero' : 'honest';
+        console.log('Inserting with mode:', insertMode);
+        const { data, error } = await supabase.from('cv_submissions').insert({
+          job_description: jobDescription,
+          original_cv: cvText.trim(),
+          tailored_cv: result,
+          mode: insertMode
+        });
+        if (error) {
+          console.error('Supabase insert error:', JSON.stringify(error));
+        } else {
+          console.log('Saved successfully');
+        }
+      }
     } catch (dbErr) {
       console.error('DB save failed:', JSON.stringify(dbErr));
     }
