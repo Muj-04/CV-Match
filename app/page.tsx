@@ -80,6 +80,40 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ── Ticker ── */}
+      <div className="overflow-hidden bg-[#000f22] border-t border-b border-[rgba(192,230,253,0.1)] py-3">
+        <div
+          className="flex whitespace-nowrap"
+          style={{
+            animation: 'ticker 30s linear infinite',
+            display: 'inline-flex',
+          }}
+        >
+          {[
+            'Tailor your CV to any job in seconds',
+            'Never fabricates skills or experience',
+            'Honest mode · Hero mode',
+            'Arabic & English supported',
+            'Missing keywords detection',
+            'Export to PDF instantly',
+            'Free to use · No signup needed',
+          ].concat([
+            'Tailor your CV to any job in seconds',
+            'Never fabricates skills or experience',
+            'Honest mode · Hero mode',
+            'Arabic & English supported',
+            'Missing keywords detection',
+            'Export to PDF instantly',
+            'Free to use · No signup needed',
+          ]).map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-3 px-8 text-sm font-semibold text-white/70 tracking-wide uppercase">
+              <span className="text-[#c0e6fd] text-xs">✦</span>
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+
       {/* ── How it works ── */}
       <section className="bg-white border-b border-gray-100">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:py-20">
