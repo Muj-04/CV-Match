@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import Link from "next/link";
+import Logo from "../components/Logo";
 
 // ── PDF helpers ────────────────────────────────────────────────────────────
 
@@ -357,7 +358,7 @@ export default function TailorPage() {
             </svg>
             Back
           </Link>
-          <span className="font-semibold text-[#1b3554]">CV Match</span>
+          <Logo variant="dark" height={28} />
           <div className="w-12" />
         </div>
       </nav>

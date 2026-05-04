@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Logo from "./components/Logo";
 
 export default function Home() {
   return (
@@ -216,7 +217,7 @@ export default function Home() {
       {/* ── Footer ── */}
       <footer className="border-t border-gray-200 bg-[#eef3f9]">
         <div className="mx-auto max-w-3xl px-4 py-6 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-gray-400">
-          <span className="font-semibold text-gray-500">CV Match</span>
+          <Logo variant="dark" height={26} />
           <span>Built with AI — tailor every application in seconds</span>
         </div>
       </footer>
