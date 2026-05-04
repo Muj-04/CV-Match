@@ -709,7 +709,7 @@ export default function TailorPage() {
                   <svg className="h-3 w-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
-                  {keyword}
+                  {keyword.toUpperCase().length <= 4 ? keyword.toUpperCase() : keyword.charAt(0).toUpperCase() + keyword.slice(1)}
                 </span>
               ))}
             </div>
