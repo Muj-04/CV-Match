@@ -210,55 +210,43 @@ export default function TailorPage() {
 
       // Extract missing keywords
       const extractMissingKeywords = (jd: string, cv: string): string[] => {
-        const stopWords = new Set([
-          'about', 'above', 'after', 'again', 'their', 'there', 'these',
-          'those', 'would', 'could', 'should', 'which', 'while', 'where',
-          'other', 'being', 'every', 'through', 'during', 'before',
-          'between', 'having', 'within', 'without', 'across', 'with',
-          'that', 'this', 'from', 'they', 'will', 'have', 'your', 'the',
-          'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her',
-          'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his',
-          'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'way',
-          'who', 'any', 'each', 'more', 'also', 'into', 'than', 'then',
-          'them', 'well', 'were', 'when', 'work', 'such', 'use', 'used',
-          'using', 'must', 'need', 'able', 'both', 'role', 'team', 'make',
-          'take', 'strong', 'experience', 'skills', 'ability', 'knowledge',
-          'understanding', 'excellent', 'good', 'great', 'including',
-          'related', 'relevant', 'required', 'preferred', 'responsibilities',
-          'requirements', 'qualifications'
-        ]);
+        const stopWords = new Set(['about','above','after','again','their',
+          'there','these','those','would','could','should','which','while',
+          'where','other','being','every','through','during','before',
+          'between','having','within','without','across','with','that',
+          'this','from','they','will','have','your','the','and','for',
+          'are','but','not','you','all','can','was','one','our','out',
+          'get','has','how','its','may','new','now','see','way','who',
+          'any','each','more','also','into','than','then','them','well',
+          'were','when','work','such','use','used','using','must','need',
+          'able','both','role','team','make','take','strong','experience',
+          'skills','ability','knowledge','understanding','excellent','good',
+          'great','including','related','relevant','required','preferred',
+          'responsibilities','requirements','qualifications','years','year']);
 
         const jdLower = jd.toLowerCase();
         const cvLower = cv.toLowerCase();
 
-        // Extract meaningful phrases (2-3 word combos) and single words
-        const phrases: string[] = [];
+        // Extract all meaningful words from JD (6+ chars)
+        const jdWords = jdLower.match(/\b[a-z]{6,}\b/g) || [];
+        const uniqueJdWords = [...new Set(jdWords)].filter(w => !stopWords.has(w));
 
-        // Extract 2-word phrases from JD
-        const jdWords = jdLower.match(/\b[a-z][a-z-]{3,}\b/g) || [];
-        const jdWordList = jdWords.filter(w => !stopWords.has(w));
+        // Find words NOT in CV using exact match
+        const missing = uniqueJdWords.filter(word => !cvLower.includes(word));
 
-        for (let i = 0; i < jdWordList.length - 1; i++) {
-          const phrase = `${jdWordList[i]} ${jdWordList[i + 1]}`;
-          if (phrase.length > 8 && !cvLower.includes(jdWordList[i].slice(0, Math.floor(jdWordList[i].length * 0.8)))) {
-            phrases.push(phrase);
-          }
-        }
+        // Also check for important short keywords explicitly
+        const importantShort = ['sql', 'kpi', 'kpis', 'jira', 'figma', 'looker',
+          'mixpanel', 'agile', 'scrum', 'saas', 'b2b', 'b2c', 'rag', 'llm'];
+        const missingShort = importantShort.filter(w =>
+          jdLower.includes(w) && !cvLower.includes(w)
+        );
 
-        // Also get important single keywords
-        const singleMissing = jdWordList.filter(word => {
-          if (word.length < 5) return false;
-          const stem = word.slice(0, Math.floor(word.length * 0.8));
-          return !cvLower.includes(stem);
-        });
-
-        // Combine and deduplicate, limit to top 8
-        const allMissing = [...new Set([...phrases.slice(0, 4), ...singleMissing.slice(0, 6)])];
+        // Combine, deduplicate, limit to 8
+        const allMissing = [...new Set([...missingShort, ...missing])];
         return allMissing.slice(0, 8);
       };
 
-      const missing = extractMissingKeywords(jobDescription, tailoredCV);
-      setMissingKeywords(missing);
+      setMissingKeywords(extractMissingKeywords(jobDescription, tailoredCV));
 
       // Detect Arabic text for RTL support
       const isArabic = /[؀-ۿ]/.test(tailoredCV);
