@@ -86,6 +86,7 @@ export default function TailorPage() {
   const [showLengthWarning, setShowLengthWarning] = useState(false);
   const [showComparison, setShowComparison] = useState(false);
   const [isRtl, setIsRtl] = useState(false);
+  const [missingKeywords, setMissingKeywords] = useState<string[]>([]);
   const resultRef = useRef<HTMLDivElement>(null);
   const pdfInputRef = useRef<HTMLInputElement>(null);
 
@@ -143,6 +144,7 @@ export default function TailorPage() {
     setShowLengthWarning(false);
     setShowComparison(false);
     setIsRtl(false);
+    setMissingKeywords([]);
 
     try {
       const body = new FormData();
@@ -205,6 +207,58 @@ export default function TailorPage() {
 
       const displayScore = scaleScore(score);
       setMatchScore(displayScore);
+
+      // Extract missing keywords
+      const extractMissingKeywords = (jd: string, cv: string): string[] => {
+        const stopWords = new Set([
+          'about', 'above', 'after', 'again', 'their', 'there', 'these',
+          'those', 'would', 'could', 'should', 'which', 'while', 'where',
+          'other', 'being', 'every', 'through', 'during', 'before',
+          'between', 'having', 'within', 'without', 'across', 'with',
+          'that', 'this', 'from', 'they', 'will', 'have', 'your', 'the',
+          'and', 'for', 'are', 'but', 'not', 'you', 'all', 'can', 'her',
+          'was', 'one', 'our', 'out', 'day', 'get', 'has', 'him', 'his',
+          'how', 'its', 'may', 'new', 'now', 'old', 'see', 'two', 'way',
+          'who', 'any', 'each', 'more', 'also', 'into', 'than', 'then',
+          'them', 'well', 'were', 'when', 'work', 'such', 'use', 'used',
+          'using', 'must', 'need', 'able', 'both', 'role', 'team', 'make',
+          'take', 'strong', 'experience', 'skills', 'ability', 'knowledge',
+          'understanding', 'excellent', 'good', 'great', 'including',
+          'related', 'relevant', 'required', 'preferred', 'responsibilities',
+          'requirements', 'qualifications'
+        ]);
+
+        const jdLower = jd.toLowerCase();
+        const cvLower = cv.toLowerCase();
+
+        // Extract meaningful phrases (2-3 word combos) and single words
+        const phrases: string[] = [];
+
+        // Extract 2-word phrases from JD
+        const jdWords = jdLower.match(/\b[a-z][a-z-]{3,}\b/g) || [];
+        const jdWordList = jdWords.filter(w => !stopWords.has(w));
+
+        for (let i = 0; i < jdWordList.length - 1; i++) {
+          const phrase = `${jdWordList[i]} ${jdWordList[i + 1]}`;
+          if (phrase.length > 8 && !cvLower.includes(jdWordList[i].slice(0, Math.floor(jdWordList[i].length * 0.8)))) {
+            phrases.push(phrase);
+          }
+        }
+
+        // Also get important single keywords
+        const singleMissing = jdWordList.filter(word => {
+          if (word.length < 5) return false;
+          const stem = word.slice(0, Math.floor(word.length * 0.8));
+          return !cvLower.includes(stem);
+        });
+
+        // Combine and deduplicate, limit to top 8
+        const allMissing = [...new Set([...phrases.slice(0, 4), ...singleMissing.slice(0, 6)])];
+        return allMissing.slice(0, 8);
+      };
+
+      const missing = extractMissingKeywords(jobDescription, tailoredCV);
+      setMissingKeywords(missing);
 
       // Detect Arabic text for RTL support
       const isArabic = /[؀-ۿ]/.test(tailoredCV);
@@ -642,6 +696,39 @@ export default function TailorPage() {
                   <ReactMarkdown>{result}</ReactMarkdown>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Missing Keywords Panel */}
+        {missingKeywords.length > 0 && (
+          <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 overflow-hidden">
+            <div className="flex items-center gap-2 px-4 py-3 bg-amber-100 border-b border-amber-200">
+              <svg className="h-4 w-4 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              <span className="text-sm font-semibold text-amber-700">
+                {missingKeywords.length} keywords from the JD not found in your CV
+              </span>
+              <span className="ml-auto text-xs text-amber-500">Consider adding these manually</span>
+            </div>
+            <div className="px-4 py-3 flex flex-wrap gap-2">
+              {missingKeywords.map((keyword, i) => (
+                <span
+                  key={i}
+                  className="inline-flex items-center gap-1 rounded-full bg-white border border-amber-300 px-3 py-1 text-xs font-medium text-amber-700"
+                >
+                  <svg className="h-3 w-3 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                  </svg>
+                  {keyword}
+                </span>
+              ))}
+            </div>
+            <div className="px-4 py-2 bg-amber-50 border-t border-amber-100">
+              <p className="text-xs text-amber-600">
+                💡 Add these to your CV where they honestly apply to improve your ATS score
+              </p>
             </div>
           </div>
         )}
